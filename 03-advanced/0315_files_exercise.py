@@ -24,9 +24,9 @@ Fortsæt derefter med den næste fil.
 """
 myfile = "0315.1_name.txt"
 
-with open(myfile, "r") as file:
+with open(myfile, "r") as file: # "r" instead of "w" to read the file instead of writing the file
     for line in file:
         line.strip()
-        print(line)
-
+        line = line.split()
+        print(line[0], "is", line[1], "years old")
 
