@@ -78,8 +78,8 @@ def buy_whiskey():
 def drink():
     if morris["whiskey"] >= 1:
         morris["sleepiness"] += 5
-        morris["thirst"] -= 15
-        morris["hunger"] -= 1
+        morris["thirst"] -= 17
+        morris["hunger"] += 1
         morris["whiskey"] -= 1
 
 def rest():
@@ -88,7 +88,7 @@ def rest():
     morris["hunger"] += 3
 
 def rent():
-    morris["gold"] -= 20
+    morris["gold"] -= 25
 
 
 
@@ -103,7 +103,7 @@ while morris["turn"] < 1000:
             eat()
             rest()
             sleep()
-        elif morris["gold"] < 0:
+        elif morris["gold"] < 10:
            mine()
            mine()
            eat()
@@ -126,7 +126,7 @@ while morris["turn"] < 1000:
 
     # For those hungry and thirsty moments:
     if morris["thirst"] > 60:
-        while morris["thirst"] > 40:
+        while morris["thirst"] > 50:
             buy_whiskey()
             drink()
 
