@@ -43,6 +43,7 @@ class Character:
         self._current_health = health
         self.attackpower = attackpower
 
+
     def __repr__(self):
         return f"{self._current_health}/{self.max_health} health, {self.attackpower} attack"
 

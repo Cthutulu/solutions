@@ -83,6 +83,3 @@ print(puppy)
 puppy.make_noise()
 print(puppy.wag_tail())
 
-
-
-
