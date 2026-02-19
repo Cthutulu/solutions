@@ -37,7 +37,7 @@ og sammenlign det med lærerens løsning i 0624_rpg1_solution.py
 """
 
 class Character:
-    def __init__(self, name, health, attackpower):
+    def __init__(self, name: str, health: int , attackpower: int):
         self.name = name
         self.max_health = health
         self._current_health = health
@@ -45,16 +45,24 @@ class Character:
 
 
     def __repr__(self):
-        return f"{self._current_health}/{self.max_health} health, {self.attackpower} attack"
+        return f"{self.name} has {self._current_health}/{self.max_health} health, and {self.attackpower} attack"
 
     def hit(self, other):
+        return f"{self.name} hit {other.name} for {self.attackpower} damage"
         other.take_damage(self.attackpower)
 
     def take_damage(self, attackpower):
+        return f"{self.name} takes {other.attackpower} "
         self._current_health -= attackpower
 
-hero1 = Character("Bozeto", 100, 20)
-hero2 = Character("Andananda", 110, 24)
-print(hero1)
-print(hero2)
+    def get_healed(self, healpower):
+        self._current_health += healpower
 
+
+class Healer(Character):
+    def __init__(self, name: str, health: int, attackpower: int, healpower: int):
+        super().__init__(name, health, 0)
+        self.healpower = healpower
+
+    def heal(self, other):
+        other.get_healed(self.healpower)
