@@ -52,7 +52,7 @@ class Character:
         other.take_damage(self.attackpower)
 
     def take_damage(self, attackpower):
-        return f"{self.name} takes {other.attackpower} "
+        return f"{self.name} takes "
         self._current_health -= attackpower
 
     def get_healed(self, healpower):
