@@ -45,24 +45,45 @@ class Character:
 
 
     def __repr__(self):
-        return f"{self.name} has {self._current_health}/{self.max_health} health, and {self.attackpower} attack"
+        return f"{self.name} has {self._current_health}/{self.max_health} health"
 
     def hit(self, other):
-        return f"{self.name} hit {other.name} for {self.attackpower} damage"
-        other.take_damage(self.attackpower)
+        print(f"{self.name} hit {other.name} for {self.attackpower} damage")
+        other._take_damage(self.attackpower)
 
-    def take_damage(self, attackpower):
-        return f"{self.name} takes "
+    def _take_damage(self, attackpower):
         self._current_health -= attackpower
 
-    def get_healed(self, healpower):
+    def _get_healed(self, healpower):
         self._current_health += healpower
 
+    def health(self):
+        return self._current_health
 
 class Healer(Character):
-    def __init__(self, name: str, health: int, attackpower: int, healpower: int):
+    def __init__(self, name: str, health: int, healpower: int):
         super().__init__(name, health, 0)
         self.healpower = healpower
 
     def heal(self, other):
-        other.get_healed(self.healpower)
+        print(f"{self.name} heals {other.name} for {self.healpower} health")
+        other._get_healed(self.healpower)
+
+Hero = Character ("hero", 150, 15)
+Enemy = Character ("Dragon", 200, 20)
+Cleric = Healer ("Cleric", 100, 10)
+
+print(Hero)
+print(Enemy)
+print(Cleric)
+print()
+
+while Enemy.health() >= 0:
+    Enemy.hit(Hero)
+    Cleric.heal(Hero)
+    Hero.hit(Enemy)
+    print()
+
+print(Hero)
+print(Enemy)
+print(Cleric)
