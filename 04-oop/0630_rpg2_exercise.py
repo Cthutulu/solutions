@@ -33,7 +33,7 @@ import random
 
 
 class Character:
-    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
+    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=0):
         self.name = name
         self.max_health = health
         self._current_health = health
@@ -42,6 +42,13 @@ class Character:
         self.phy_defense = phy_defense
         self.mag_defense = mag_defense
         self.speed = speed
+        self.special_cooldown = starting_cooldown
+        self.special_used = False
+        self.taunt_active = False
+        self.berserk_active = False
+        self.speed_buff_turns = 0
+        self.untargetable_turns = 0
+        self.stunned = False
 
     def __repr__(self):
         return f"{self.name} has {self._current_health}/{self.max_health} health"
@@ -100,15 +107,12 @@ class Character:
     def is_alive(self):
         return self._current_health > 0
 
-    def prio_target(self, other):
-        pass
-
 
 
 
 class Paladin(Character):
-    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, p_attack, m_attack, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=2):
+        super().__init__(name, health, p_attack, m_attack, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Paladin has {self._current_health}/{self.max_health} health"
@@ -117,36 +121,22 @@ class Paladin(Character):
         other._get_healed(int(self.m_attack / 2.5))
 
     def radiant_strike(self, other):
-        if self.is_alive():
+        if self.is_alive() and self.special_cooldown == 0:
             damage = self.m_attack
             crit = random.random() < 0.10
-            if crit:
-                damage *= 2.2
+            if crit: damage *= 2.2
             variation = random.uniform(1.45, 1.55)
-            damage *= variation
-            damage = round(damage)
-            print(f"{self.name} attacks {other.name} for {damage} damage", end="")
+            damage = round(damage * variation)
+            print(f"{self.name} uses Radiant Strike on {other.name} for {damage} damage", end="")
             if crit:
-                print("(CRITICAL HIT!)")
+                print(" (CRITICAL HIT!)")
             else:
                 print()
             other._take_m_damage(damage)
+            self.special_cooldown = 3
+            return True
+        return False
 
-    def sacred_slash(self, other):
-        if self.is_alive():
-            damage = self.p_attack
-            crit = random.random() < 0.05
-            if crit:
-                damage *= 2.1
-            variation = random.uniform(1.25, 1.35)
-            damage *= variation
-            damage = round(damage)
-            print(f"{self.name} attacks {other.name} for {damage} damage", end="")
-            if crit:
-                print("(CRITICAL HIT!)")
-            else:
-                print()
-            other._take_p_damage(damage)
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -168,30 +158,23 @@ class Paladin(Character):
 
 
 class Rogue(Character):
-    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=2):
+        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed, starting_cooldown)
         self.untargetable = False
         self.untargetable_turns = 0
 
     def __repr__(self):
         return f"{self.name} the Rouge has {self._current_health}/{self.max_health} health"
 
-    def sacred_slash(self, other):
-        if self.is_alive():
-            damage = self.p_attack
-            crit = random.random() < 1.00
-            if crit:
-                damage *= 1.6
-            damage = round(damage)
-            print(f"{self.name} attacks {other.name} for {damage} damage", end="")
-            if crit:
-                print("(CRITICAL HIT!)")
+    def backstab(self, other):
+        if self.is_alive() and not self.special_used and self.special_cooldown == 0:
+            damage = round(self.p_attack * 2.0)
+            print(f"{self.name} uses Backstab on {other.name} for {damage} damage!")
             other._take_p_damage(damage)
-
-    def vanish(self, turns=2):
-        self.untargetable = True
-        self.untargetable_turns = turns
-        print(f"{self.name} casts Vanish and cannot be targeted for {turns} turns!")
+            self.special_used = True
+            self.special_cooldown = 2
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -211,15 +194,21 @@ class Rogue(Character):
 
 
 class Mage(Character):
-    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=2):
+        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Mage has {self._current_health}/{self.max_health} health"
 
-    # def chain_lightning(self, other):    hits multiple targets for little damage
-
-    # def mana_burst(self, other):   strong attack but unable to attack next turn
+    def mana_burst(self, other):
+        if self.is_alive() and not self.special_used and self.special_cooldown == 0:
+            damage = round(self.m_attack * 2.0)
+            print(f"{self.name} casts Mana Burst on {other.name} for {damage} damage!")
+            other._take_m_damage(damage)
+            self.special_used = True
+            self.special_cooldown = 2
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -246,8 +235,13 @@ class Barbarian(Character):
     def __repr__(self):
         return f"{self.name} the Barbarian has {self._current_health}/{self.max_health} health"
 
-    # def bloodrage(self, other):            gain health on kill
-    # def beserk(self):                      +damage -defense
+    def check_berserk(self):
+        if not self.berserk_active and self.is_alive() and self._current_health < self.max_health * 0.4:
+            self.berserk_active = True
+            self.p_attack = int(self.p_attack * 1.5)
+            self.phy_defense = 5
+            self.mag_defense = 5
+            print(f"{self.name} goes Berserk! Damage is increased at the cost of defense until death!")
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -268,29 +262,26 @@ class Barbarian(Character):
 
 
 class Ranger(Character):
-    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, p_attack, m_attack, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, p_attack: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=1):
+        super().__init__(name, health, p_attack, m_attack, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Ranger has {self._current_health}/{self.max_health} health"
 
-    # def rain_of_arrows():     hits multiple enemies for small damage physical
-
     def spirit_arrow(self, other):
-        if self.is_alive():
+        if self.is_alive() and self.special_cooldown == 0:
             damage = self.m_attack
             crit = random.random() < 0.3
-            if crit:
-                damage *= 2.3
+            if crit: damage *= 2.3
             variation = random.uniform(1.35, 1.55)
-            damage *= variation
-            damage = round(damage)
-            print(f"{self.name} attacks {other.name} for {damage} damage", end="")
-            if crit:
-                print("(CRITICAL HIT!)")
-            else:
-                print()
+            damage = round(damage * variation)
+            print(f"{self.name} uses Spirit Arrow on {other.name} for {damage} damage", end="")
+            if crit: print(" (CRITICAL HIT!)")
+            else: print()
             other._take_m_damage(damage)
+            self.special_cooldown = 2
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -310,18 +301,22 @@ class Ranger(Character):
 
 
 class Bard(Character):
-    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=1):
+        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Bard has {self._current_health}/{self.max_health} health"
 
-    def heal(self, other):
-        other._get_healed(int(self.m_attack / 3))
-
-    # def hymn_of_haste():     give speed
-
-    # def hymn_of_aegis():     give defenses
+    def hymn_of_haste(self, allies):
+        if self.is_alive() and self.special_cooldown == 0:
+            for ally in allies:
+                if ally.is_alive():
+                    ally.speed = int(ally.speed * 1.5)
+                    ally.speed_buff_turns = 2
+            self.special_cooldown = 4
+            print(f"{self.name} casts Hymn of Haste! Allies speed is increased for 2 turns!")
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -343,29 +338,21 @@ class Bard(Character):
 
 
 class Warrior(Character):
-    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=2):
+        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Warrior has {self._current_health}/{self.max_health} health"
 
-    # def shield_bash():     stuns enemy for 1 turn
-
-    def mighty_strike(self, other):
-        if self.is_alive():
-            damage = self.p_attack
-            crit = random.random() < 0.05
-            if crit:
-                damage *= 2.5
-            variation = random.uniform(1.55, 1.75)
-            damage *= variation
-            damage = round(damage)
-            print(f"{self.name} attacks {other.name} for {damage} damage", end="")
-            if crit:
-                print("(CRITICAL HIT!)")
-            else:
-                print()
-            other._take_p_damage(damage)
+    def shield_bash(self, target):
+        if self.is_alive() and self.special_cooldown == 0:
+            damage = round(self.p_attack * 0.5)
+            print(f"{self.name} uses Shield Bash on {target.name} for {damage} damage! {target.name} is stunned next turn!")
+            target._take_p_damage(damage)
+            target.stunned = True
+            self.special_cooldown = 3
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -386,15 +373,20 @@ class Warrior(Character):
 
 
 class Tank(Character):
-    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, p_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=1):
+        super().__init__(name, health, p_attack, 0, phy_defense, mag_defense, speed, starting_cooldown)
 
     def __repr__(self):
         return f"{self.name} the Tank has {self._current_health}/{self.max_health} health"
 
-    # def fortify():    buff defenses
-
-    # def taunt():      become target
+    def taunt(self):
+        if self.is_alive() and self.special_cooldown == 0:
+            self.taunt_active = True
+            self.taunt_turns = 2
+            self.special_cooldown = 4
+            print(f"{self.name} uses Taunt! Enemies must attack him for 2 turns!")
+            return True
+        return False
 
     def normal_attack(self, other):
         if self.is_alive():
@@ -414,28 +406,37 @@ class Tank(Character):
 
 
 class Priest(Character):
-    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int):
-        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed)
+    def __init__(self, name: str, health: int, m_attack: int, phy_defense: int, mag_defense: int, speed: int, starting_cooldown=1):
+        super().__init__(name, health, 0, m_attack, phy_defense, mag_defense, speed, starting_cooldown)
         self.untargetable = False
         self.untargetable_turns = 0
 
     def __repr__(self):
         return f"{self.name} the Priest has {self._current_health}/{self.max_health} health"
 
-    def normal_attack(self, other):
-        other._get_healed(int(self.m_attack / 2))
+    def normal_attack(self, allies):
+        if self.is_alive():
+            injured_allies = [a for a in allies if a.is_alive() and a._current_health < a.max_health]
+            if injured_allies:
+                target = min(injured_allies, key=lambda x: x._current_health)  # hopefully will heal ally with least hp maybe
+                heal_amount = int(self.m_attack / 2)
+                target._get_healed(heal_amount)
+                print(f"{self.name} heals {target.name} for {heal_amount} HP")
 
-    def mass_heal(self, other):     #maybe not working as you want
-        other._get_healed(int(self.m_attack / 2.5))
-        other._get_healed(int(self.m_attack / 2.5))
-        self._get_healed(int(self.m_attack / 2.5))
-
-    # heal all allies for small amount
-
-    def divine_shield(self, turns=3):
-        self.untargetable = True
-        self.untargetable_turns = turns
-        print(f"{self.name} casts Divine Shield and cannot be targeted for {turns} turns!")
+    def holy_bastion(self, allies):
+        if self.is_alive() and not self.special_used:
+            if any(a.is_alive() and a._current_health <= a.max_health * 0.7 for a in allies):
+                self.special_used = True
+                self.untargetable = True
+                self.untargetable_turns = 3
+                print(f"{self.name} casts Holy Bastion! Priest cannot be targeted for 3 turns!")
+                for ally in allies:
+                    if ally.is_alive() and ally._current_health < ally.max_health:
+                        heal_amount = int(self.m_attack / 2.5)
+                        ally._get_healed(heal_amount)
+                        print(f"{self.name} heals {ally.name} for {heal_amount} HP")
+                return True
+        return False
 
 
 paladin = Paladin ("Caelvaris", 180, 15, 20, 30, 30, 5)
@@ -486,31 +487,91 @@ def battle(team1, team2):
 
         print(f"\n===== ROUND {round_num} =====\n")
 
-        for char in team1:
-            if char.is_alive():
-                target = random_target(team2)
-                if target:
-                    char.normal_attack(target)
 
-            if getattr(char, "untargetable", False):
+        turn_order = team1 + team2
+
+        turn_order.sort(key=lambda c: c.speed, reverse=True)
+
+        for char in turn_order:
+
+            if not char.is_alive():
+                continue
+
+            if char.special_cooldown > 0:
+                char.special_cooldown -= 1
+
+                # for special attacks that is activated over multiple turns
+            if getattr(char, "taunt_active", False):
+                char.taunt_turns -= 1
+                if char.taunt_turns <= 0:
+                    char.taunt_active = False
+                    print(f"{char.name}'s Taunt has ended!")
+
+            if getattr(char, "speed_buff_turns", 0) > 0:
+                char.speed_buff_turns -= 1
+                if char.speed_buff_turns <= 0:
+                    print(f"{char.name}'s speed buff has ended!")
+
+            if getattr(char, "untargetable_turns", 0) > 0:
                 char.untargetable_turns -= 1
                 if char.untargetable_turns <= 0:
                     char.untargetable = False
-                    char.untargetable_turns = 0
                     print(f"{char.name} is now targetable again.")
 
-        for char in team2:
-            if char.is_alive():
-                target = random_target(team1)
-                if target:
+                # to skip turn if character is stunned
+            if getattr(char, "stunned", False):
+                print(f"{char.name} is stunned and cannot act!")
+                char.stunned = False  # Stun lasts only 1 turn
+                continue
+
+            if isinstance(char, Barbarian):
+                char.check_berserk()
+
+            if char in team1:
+                allies = team1
+                enemies = team2
+            else:
+                allies = team2
+                enemies = team1
+
+            def select_target(enemy_list):
+                alive = [e for e in enemy_list if e.is_alive() and not getattr(e, "untargetable", False)]
+                if not alive:  # fallback
+                    alive = [e for e in enemy_list if e.is_alive()]
+
+                taunt_targets = [e for e in alive if getattr(e, "taunt_active", False)]
+                if taunt_targets:
+                    return random.choice(taunt_targets)
+                return random.choice(alive) if alive else None
+
+            target = select_target(enemies)
+
+            used_special = False
+            if isinstance(char, Paladin) and target:
+                used_special = char.radiant_strike(target)
+            elif isinstance(char, Rogue) and target:
+                used_special = char.backstab(target)
+            elif isinstance(char, Mage) and target:
+                used_special = char.mana_burst(target)
+            elif isinstance(char, Barbarian):
+                # Berserk is auto handled
+                used_special = False
+            elif isinstance(char, Ranger) and target:
+                used_special = char.spirit_arrow(target)
+            elif isinstance(char, Bard):
+                used_special = char.hymn_of_haste(allies)
+            elif isinstance(char, Warrior) and target:
+                used_special = char.shield_bash(target)
+            elif isinstance(char, Tank):
+                used_special = char.taunt()
+            elif isinstance(char, Priest):
+                used_special = char.holy_bastion(allies)
+
+            if not used_special:
+                if isinstance(char, Priest):
+                    char.normal_attack(allies)
+                elif target:
                     char.normal_attack(target)
-
-            if getattr(char, "untargetable", False):
-                char.untargetable_turns -= 1
-                if char.untargetable_turns <= 0:
-                    char.untargetable = False
-                    char.untargetable_turns = 0
-                    print(f"{char.name} is now targetable again.")
 
         round_num += 1
 
@@ -536,12 +597,11 @@ battle(team1, team2)
 
 """
 random damage rolls, and a change for double damage (crit)       =Done
-different special moves for each class
+different special moves for each class    =Done
 teams of 3 against each other     =Done
 1 team win when the other team has no health      =Done
-random move choice, BUT with some things being a higher change fx, if an attack can kill it has higher change, and if you have low health the higher change for protecting, and if an ally has little health higher change to heal
-move order by speed stat
-cannot do anything when no health               =Done maybe??
-
-make sure the special moves have text added so it is shown what special move is used
+random move choice, BUT with some things being a higher change fx, if an attack can kill it has higher change, and if you have low health the higher change for protecting, and if an ally has little health higher change to heal     =kinda Done
+move order by speed stat            =Done
+cannot do anything when no health               =Done
+make sure the special moves have text added so it is shown what special move is used      =Done
 """
