@@ -39,7 +39,46 @@ Når dit program er færdigt, skal du skubbe det til dit github-repository.
 """
 
 def pyramid(lines):
-    lines = [1, 1]
+    row = [1, 1]
+    print(row, "Sum:", sum(row))
 
+    for x in range(2, lines + 1):
+        new_row = [row[0]]
+
+        for y in range(len(row) - 1):
+            if row[y] + row[y + 1] == x:
+                new_row.append(x)
+
+            new_row.append(row[y + 1])
+
+        row = new_row
+        print(row, "Sum:", sum(row))
 
 pyramid(7)
+
+
+def pyramid2(lines, first_line):
+    row = first_line
+    print(row, "Sum:", sum(row))
+
+    for x in range(2, lines + 1):
+        new_row = [row[0]]
+
+        for y in range(len(row) - 1):
+            if row[y] + row[y + 1] == x:
+                new_row.append(x)
+
+            new_row.append(row[y + 1])
+
+        row = new_row
+        print(row, "Sum:", sum(row))
+
+pyramid2(10, [3, 1, 8, 6])
+
+
+
+
+
+
+
+
