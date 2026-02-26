@@ -117,8 +117,8 @@ class Paladin(Character):
     def __repr__(self):
         return f"{self.name} the Paladin has {self._current_health}/{self.max_health} health"
 
-    def heal(self, other):
-        other._get_healed(int(self.m_attack / 2.5))
+    def use_special(self, target, _):
+        return self.radiant_strike(target)
 
     def radiant_strike(self, other):
         if self.is_alive() and self.special_cooldown == 0:
@@ -166,6 +166,9 @@ class Rogue(Character):
     def __repr__(self):
         return f"{self.name} the Rouge has {self._current_health}/{self.max_health} health"
 
+    def use_special(self, target, _):
+        return self.backstab(target)
+
     def backstab(self, other):
         if self.is_alive() and not self.special_used and self.special_cooldown == 0:
             damage = round(self.p_attack * 2.0)
@@ -199,6 +202,9 @@ class Mage(Character):
 
     def __repr__(self):
         return f"{self.name} the Mage has {self._current_health}/{self.max_health} health"
+
+    def use_special(self, target, _):
+        return self.mana_burst(target)
 
     def mana_burst(self, other):
         if self.is_alive() and not self.special_used and self.special_cooldown == 0:
@@ -235,6 +241,9 @@ class Barbarian(Character):
     def __repr__(self):
         return f"{self.name} the Barbarian has {self._current_health}/{self.max_health} health"
 
+    def use_special(self, target=None, allies=None):
+        return self.check_berserk()
+
     def check_berserk(self):
         if not self.berserk_active and self.is_alive() and self._current_health < self.max_health * 0.4:
             self.berserk_active = True
@@ -267,6 +276,9 @@ class Ranger(Character):
 
     def __repr__(self):
         return f"{self.name} the Ranger has {self._current_health}/{self.max_health} health"
+
+    def use_special(self, target, _):
+        return self.spirit_arrow(target)
 
     def spirit_arrow(self, other):
         if self.is_alive() and self.special_cooldown == 0:
@@ -307,6 +319,9 @@ class Bard(Character):
     def __repr__(self):
         return f"{self.name} the Bard has {self._current_health}/{self.max_health} health"
 
+    def use_special(self, _, allies):
+        return self.hymn_of_haste(allies)
+
     def hymn_of_haste(self, allies):
         if self.is_alive() and self.special_cooldown == 0:
             for ally in allies:
@@ -344,6 +359,9 @@ class Warrior(Character):
     def __repr__(self):
         return f"{self.name} the Warrior has {self._current_health}/{self.max_health} health"
 
+    def use_special(self, target, _):
+        return self.shield_bash(target)
+
     def shield_bash(self, target):
         if self.is_alive() and self.special_cooldown == 0:
             damage = round(self.p_attack * 0.5)
@@ -378,6 +396,9 @@ class Tank(Character):
 
     def __repr__(self):
         return f"{self.name} the Tank has {self._current_health}/{self.max_health} health"
+
+    def use_special(self, target=None, allies=None):
+        return self.taunt()
 
     def taunt(self):
         if self.is_alive() and self.special_cooldown == 0:
@@ -414,12 +435,15 @@ class Priest(Character):
     def __repr__(self):
         return f"{self.name} the Priest has {self._current_health}/{self.max_health} health"
 
+    def use_special(self, _, allies):
+        return self.holy_bastion(allies)
+
     def normal_attack(self, allies):
         if self.is_alive():
             injured_allies = [a for a in allies if a.is_alive() and a._current_health < a.max_health]
             if injured_allies:
                 target = min(injured_allies, key=lambda x: x._current_health)  # hopefully will heal ally with least hp maybe
-                heal_amount = int(self.m_attack / 2)
+                heal_amount = int(self.m_attack / 1.5)
                 target._get_healed(heal_amount)
                 print(f"{self.name} heals {target.name} for {heal_amount} HP")
 
@@ -546,26 +570,7 @@ def battle(team1, team2):
 
             target = select_target(enemies)
 
-            used_special = False
-            if isinstance(char, Paladin) and target:
-                used_special = char.radiant_strike(target)
-            elif isinstance(char, Rogue) and target:
-                used_special = char.backstab(target)
-            elif isinstance(char, Mage) and target:
-                used_special = char.mana_burst(target)
-            elif isinstance(char, Barbarian):
-                # Berserk is auto handled
-                used_special = False
-            elif isinstance(char, Ranger) and target:
-                used_special = char.spirit_arrow(target)
-            elif isinstance(char, Bard):
-                used_special = char.hymn_of_haste(allies)
-            elif isinstance(char, Warrior) and target:
-                used_special = char.shield_bash(target)
-            elif isinstance(char, Tank):
-                used_special = char.taunt()
-            elif isinstance(char, Priest):
-                used_special = char.holy_bastion(allies)
+            used_special = char.use_special(target, allies)
 
             if not used_special:
                 if isinstance(char, Priest):
