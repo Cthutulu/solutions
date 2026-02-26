@@ -600,6 +600,7 @@ battle(team1, team2)
 # print(test1)
 # print(test2)
 
+
 """
 random damage rolls, and a change for double damage (crit)       =Done
 different special moves for each class    =Done

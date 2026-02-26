@@ -42,5 +42,4 @@ def pyramid(lines):
     lines = [1, 1]
 
 
-
 pyramid(7)
