@@ -33,32 +33,4 @@ Når dit program er færdigt, skal du skubbe det til dit github-repository.
 
 
 def inventory_variant(lines):
-    sequence = [[0]]  # first line
-
-    for _ in range(1, lines):
-        current = []
-        n = 0
-
-        # count numbers sequentially until first 0
-        while True:
-            # count occurrences of n in all previous lines
-            total_count = sum(line.count(n) for line in sequence)
-            # also include numbers already in the current line
-            total_count += current.count(n)
-
-            current.append(total_count)
-
-            if total_count == 0:  # stop at first 0
-                break
-
-            n += 1  # move to next number
-
-        sequence.append(current)
-
-    # print sequence
-    for line in sequence:
-        print(line)
-
-
-# Test: first 10 lines
-inventory_variant(15)
+    pass

@@ -33,25 +33,65 @@ class LunarInt(list):
     def __init__(self, number_str):
         super().__init__()
         for c in number_str:
-            self.append(c)
-            print(self)
+            self.append(int(c))
+
+
+    def __repr__(self):
+        result = ""
+        for y in self:
+            result += str(y)
+        return result
+
 
     def plus(self, other):
-        result = LunarInt("")
-        print(result)
+        if len(self) > len(other):
+            longer = self
+            shorter = other
+        else:
+            shorter = self
+            longer = other
 
+        test = []
+        test2 = []
+
+        for x in range(1, len(longer) + 1):
+            if x <= len(shorter):
+                test.append([longer[-x], shorter[-x]])
+            else:
+                test.append([longer[-x]])
+
+            # print(test)
+
+            test2.append(max(test[-1]))
+            # print(test2)
+
+        result = LunarInt([*reversed(test2)])
+        return result
+
+
+        #     for x in range(len(self)):
+        #         if self[-1] > other[-1]:
+        #             print(self[::-1])
+        #         else:
+        #             print(other[::-1])
+        # else:
+        #     for x in range(len(other)):
+        #         if self[-1] > other[-1]:
+        #             print(self[::-1])
+        #         else:
+        #             print(other[::-1])
 
 
         # dummy = "abcdefg"
         # for i in range(4):
         #     print(dummy[-i])
-        #
+        # #
         # if number_1 > number_2:
         #     for x in self.number_1:
         #         if self.number_1[-1] > self.number_2[-1]:
         #             print("test1")
         #         else:
-        #             print("test2")
+        #             print("test2"))
         # else:
         #     for x in self.number_2:
         #         if self.number_1[-1] > self.number_2[-1]:
@@ -63,22 +103,14 @@ class LunarInt(list):
 
     def multiply(self):
         pass
-number_1 = "567"
-number_2 = "7390"
+number_1 = "2468"
+number_2 = "753"
 lunar1 = LunarInt(number_1)
 lunar2 = LunarInt(number_2)
 lunar3 = lunar1.plus(lunar2)
+print(lunar1.plus(lunar2))
 
-# if number_1 > number_2:
-#     for x in str(number_1):
-#         print(x)
-#
-# else:
-#     for x in str(number_2):
-#         if number_2 > number_1:
-#             print(x)
-#         else:
-#             print(x)
+
 
 
 
