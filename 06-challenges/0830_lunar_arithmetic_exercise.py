@@ -69,47 +69,49 @@ class LunarInt(list):
         return result
 
 
-        #     for x in range(len(self)):
-        #         if self[-1] > other[-1]:
-        #             print(self[::-1])
-        #         else:
-        #             print(other[::-1])
-        # else:
-        #     for x in range(len(other)):
-        #         if self[-1] > other[-1]:
-        #             print(self[::-1])
-        #         else:
-        #             print(other[::-1])
+    def multiply(self, other):
+        if len(self) > len(other):
+            longer = self
+            shorter = other
+        else:
+            shorter = self
+            longer = other
+
+        for y in range(1, len(shorter) + 1):
+            current_digit = shorter[-y]
+
+            test = []
+
+            for x in range(1, len(longer) + 1):
+                test.append([longer[-x], current_digit])
+
+            print(test)
+
+        # test = []
+        # test2 = []
+        #
+        # for x in range(1, len(longer) + 1):
+        #     if x <= len(shorter):
+        #         test.append([longer[-x], shorter[-x]])
+        #     else:
+        #         test.append([longer[-x]])
+        #
+        #     print(test)
+        #
+        #     test2.append(min(test[-1]))
+        #     print(test2)
+
+        # result = LunarInt([*reversed(test2)])
+        # return result
 
 
-        # dummy = "abcdefg"
-        # for i in range(4):
-        #     print(dummy[-i])
-        # #
-        # if number_1 > number_2:
-        #     for x in self.number_1:
-        #         if self.number_1[-1] > self.number_2[-1]:
-        #             print("test1")
-        #         else:
-        #             print("test2"))
-        # else:
-        #     for x in self.number_2:
-        #         if self.number_1[-1] > self.number_2[-1]:
-        #             print("test3")
-        #         else:
-        #             print("test 4")
-
-# "range(11, 6, -1)"
-
-    def multiply(self):
-        pass
 number_1 = "2468"
 number_2 = "753"
 lunar1 = LunarInt(number_1)
 lunar2 = LunarInt(number_2)
 lunar3 = lunar1.plus(lunar2)
 print(lunar1.plus(lunar2))
-
+lunar4 = lunar1.multiply(lunar2)
 
 
 
