@@ -51,22 +51,49 @@ class LunarInt(list):
             shorter = self
             longer = other
 
-        test = []
-        test2 = []
+        pairs = []
+        sum = []
 
         for x in range(1, len(longer) + 1):
             if x <= len(shorter):
-                test.append([longer[-x], shorter[-x]])
+                pairs.append([longer[-x], shorter[-x]])
             else:
-                test.append([longer[-x]])
+                pairs.append([longer[-x]])
 
-            # print(test)
+            # print(pairs)
 
-            test2.append(max(test[-1]))
-            # print(test2)
+            sum.append(max(pairs[-1]))
+            # print(sum)
 
-        result = LunarInt([*reversed(test2)])
+        result = LunarInt([*reversed(sum)])
         return result
+
+
+    # def plus(self, other):
+    #     if len(self) > len(other):
+    #         longer = self
+    #         shorter = other
+    #     else:
+    #         shorter = self
+    #         longer = other
+    #
+    #     test = []
+    #     test2 = []
+    #
+    #     for x in range(1, len(longer) + 1):
+    #         if x <= len(shorter):
+    #             test.append([longer[-x], shorter[-x]])
+    #         else:
+    #             test.append([longer[-x]])
+    #
+    #         # print(test)
+    #
+    #         test2.append(max(test[-1]))
+    #         # print(test2)
+    #
+    #     result = LunarInt([*reversed(test2)])
+    #     return result
+
 
 
     def multiply(self, other):
@@ -77,41 +104,85 @@ class LunarInt(list):
             shorter = self
             longer = other
 
+        products = []
+
         for y in range(1, len(shorter) + 1):
             current_digit = shorter[-y]
 
-            test = []
+            pairs = []
+            product = [0] * (y - 1)
 
             for x in range(1, len(longer) + 1):
-                test.append([longer[-x], current_digit])
+                pairs.append([longer[-x], current_digit])
 
-            print(test)
+                product.append(min(pairs[-1]))
 
-        # test = []
-        # test2 = []
-        #
-        # for x in range(1, len(longer) + 1):
-        #     if x <= len(shorter):
-        #         test.append([longer[-x], shorter[-x]])
-        #     else:
-        #         test.append([longer[-x]])
-        #
-        #     print(test)
-        #
-        #     test2.append(min(test[-1]))
-        #     print(test2)
+            # print(pairs)
+            # print(product)
 
-        # result = LunarInt([*reversed(test2)])
-        # return result
+            products.append(product)
+            # print(products)
+
+        result = LunarInt("0")
+
+        for p in products:
+            result = result.plus(LunarInt([*reversed(p)]))
+
+        return result
+
+    # def multiply(self, other):
+    #     if len(self) > len(other):
+    #         longer = self
+    #         shorter = other
+    #     else:
+    #         shorter = self
+    #         longer = other
+    #
+    #     test3 = []
+    #
+    #     for y in range(1, len(shorter) + 1):
+    #         current_digit = shorter[-y]
+    #
+    #         test = []
+    #         test2 = [0] * (y - 1)
+    #
+    #         for x in range(1, len(longer) + 1):
+    #             test.append([longer[-x], current_digit])
+    #
+    #             test2.append(min(test[-1]))
+    #
+    #         # print(test)
+    #         # print(test2)
+    #
+    #         test3.append(test2)
+    #         # print(test3)
+    #
+    #     result = LunarInt("0")
+    #
+    #     for p in test3:
+    #         result = result.plus(LunarInt([*reversed(p)]))
+    #
+    #     return result
 
 
 number_1 = "2468"
 number_2 = "753"
+
 lunar1 = LunarInt(number_1)
 lunar2 = LunarInt(number_2)
+
 lunar3 = lunar1.plus(lunar2)
-print(lunar1.plus(lunar2))
 lunar4 = lunar1.multiply(lunar2)
+
+print(f"\n===== Lunar Arithmetic =====\n")
+print(f" Inputs:")
+print(f"  {lunar1}")
+print(f"  {lunar2}\n")
+print(f"With lunar Arithmetic:")
+print(f"  {lunar1} + {lunar2} = {lunar3}")
+
+print(f"With Lunar Arithmetic:")
+print(f"  {lunar1} * {lunar2} = {lunar4}")
 
 
 
