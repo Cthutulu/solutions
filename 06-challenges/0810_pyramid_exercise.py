@@ -39,12 +39,47 @@ Når dit program er færdigt, skal du skubbe det til dit github-repository.
 """
 
 def pyramid(lines):
-    pass
+    pyramid = [[]]
+    pyramid.append([1, 1])
+
+
+    for x in range(2, lines + 1):
+        row = pyramid[-1]
+
+        test1 = row[:-1]
+        test2 = row[1:]
+
+        new_row = [row[0]]
+
+        for left, right in zip(test1, test2):
+           if left + right == row[0]:
+               print("pog")
+           else:
+               print("not pog")
 
 
 
 
 
+        print(row)
 
 
 
+
+
+# list1 = [1, 4, 7, 9]
+# list2 = [2, 5, 6, 8, 5]
+#
+# test2 = []
+#
+# test = list(zip(list1, list2))
+# print(test)
+# x = 9
+#
+# for left, right in test:
+#     if left + right == x:
+#         print("pog")
+#
+# print(test2)
+#
+pyramid(1)
