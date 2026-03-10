@@ -34,3 +34,8 @@ Når dit program er færdigt, skal du skubbe det til dit github-repository.
 
 def inventory_variant(lines):
     pass
+
+list1 = [1, 2, 1]
+
+list1.count(1)
+print(list1.count(1))

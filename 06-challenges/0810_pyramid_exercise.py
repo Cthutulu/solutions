@@ -39,18 +39,18 @@ Når dit program er færdigt, skal du skubbe det til dit github-repository.
 """
 
 def pyramid(lines):
-    pyramid = [[]]
+    pyramid = []
     pyramid.append([1, 1])
 
     for x in range(1, lines + 1):
         row = pyramid[-1]
 
-        test1 = row[:-1]
-        test2 = row[1:]
+        start = row[:-1]
+        end = row[1:]
 
         new_row = [row[0]]
 
-        for left, right in zip(test1, test2):
+        for left, right in zip(start, end):
             if left + right == x:
                 new_row.append(x)
 
@@ -61,5 +61,31 @@ def pyramid(lines):
         print(new_row)
 
 
-pyramid(5)
+pyramid(7)
 
+
+
+def pyramid2(lines, firstline):
+    pyramid = []
+    pyramid.append(firstline)
+
+    for x in range(1, lines + 1):
+        row = pyramid[-1]
+
+        start = row[:-1]
+        end = row[1:]
+
+        new_row = [row[0]]
+
+        for left, right in zip(start, end):
+            if left + right == x:
+                new_row.append(x)
+
+            new_row.append(right)
+
+        pyramid.append(new_row)
+
+        print(new_row)
+
+
+# pyramid2(10, [1, 2, 3, 4, 2, 1])
