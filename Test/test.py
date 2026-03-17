@@ -1,80 +1,109 @@
 import tkinter as tk
+import random
+import math
 
-# Create main window
+fake_buttons = []
+spawning = False
+cheat_mode = False
+
+# -------------------------
+# CHEAT SYSTEM
+# -------------------------
+
+def toggle_cheat(event):
+    global cheat_mode
+
+    # Check if Ctrl + Shift are pressed
+    if (event.state & 0x4) and (event.state & 0x1):
+        cheat_mode = not cheat_mode
+
+        if cheat_mode:
+            print("Cheat mode ON")
+            real_button.config(text="Go ahead...")
+        else:
+            print("Cheat mode OFF")
+            real_button.config(text="Catch me!")
+
+# -------------------------
+# REAL BUTTON MOVEMENT
+# -------------------------
+
+def move_button_if_close(event):
+    global cheat_mode
+
+    if cheat_mode:
+        return
+
+    mouse_x = event.x
+    mouse_y = event.y
+
+    button_x = real_button.winfo_x()
+    button_y = real_button.winfo_y()
+
+    distance = math.sqrt((mouse_x - button_x)**2 + (mouse_y - button_y)**2)
+
+    if distance < 100:
+        new_x = random.randint(0, 350)
+        new_y = random.randint(0, 250)
+        real_button.place(x=new_x, y=new_y)
+
+def win():
+    real_button.config(text="GGs")
+
+# -------------------------
+# FAKE BUTTON SYSTEM
+# -------------------------
+
+def spawn_fake_buttons():
+    global fake_buttons, spawning
+    spawning = True
+
+    base_x = real_button.winfo_x()
+    base_y = real_button.winfo_y()
+
+    for i in range(5):
+        x = base_x + random.randint(-80, 80)
+        y = base_y + random.randint(-80, 80)
+
+        btn = tk.Button(root, text="Click me!", cursor="X_cursor")
+        btn.place(x=x, y=y)
+
+        btn.config(command=lambda b=btn: fake_click(b))
+
+        fake_buttons.append(btn)
+
+def fake_click(btn):
+    global fake_buttons, spawning
+
+    btn.destroy()
+    fake_buttons.remove(btn)
+
+    if len(fake_buttons) == 0:
+        spawning = False
+        schedule_fake_buttons()
+
+def schedule_fake_buttons():
+    delay = random.randint(60000, 180000)  # 1–3 minutes
+    root.after(delay, spawn_fake_buttons)
+
+# -------------------------
+# WINDOW SETUP
+# -------------------------
+
 root = tk.Tk()
-root.title("My First Desktop App")
-root.geometry("300x200")
+root.title("Really Cool Button")
+root.geometry("400x300")
 
-# Add a label
-label = tk.Label(root, text="Hello, PyCharm!", font=("Arial", 14))
-label.pack(pady=20)
+real_button = tk.Button(root, text="Click me!", command=win)
+real_button.place(x=150, y=120)
 
-# Add a button
-def on_click():
-    label.config(text="Button Clicked!")
+# Mouse tracking
+root.bind("<Motion>", move_button_if_close)
 
-button = tk.Button(root, text="Click Me", command=on_click)
-button.pack()
+# 🔥 THIS IS THE IMPORTANT LINE (cheat key)
+root.bind_all("<KeyPress>", toggle_cheat)
 
-# Run the app
+# Start fake button cycle
+schedule_fake_buttons()
+
 root.mainloop()
-
-# def plus(self, other):
-#     if len(self) > len(other):
-#         longer = self
-#         shorter = other
-#     else:
-#         shorter = self
-#         longer = other
-#
-#     test = []
-#     test2 = []
-#
-#     for x in range(1, len(longer) + 1):
-#         if x <= len(shorter):
-#             test.append([longer[-x], shorter[-x]])
-#         else:
-#             test.append([longer[-x]])
-#
-#         # print(test)
-#
-#         test2.append(max(test[-1]))
-#         # print(test2)
-#
-#     result = LunarInt([*reversed(test2)])
-#     return result
-
-
-# def multiply(self, other):
-#     if len(self) > len(other):
-#         longer = self
-#         shorter = other
-#     else:
-#         shorter = self
-#         longer = other
-#
-#     test3 = []
-#
-#     for y in range(1, len(shorter) + 1):
-#         current_digit = shorter[-y]
-#
-#         test = []
-#         test2 = [0] * (y - 1)
-#
-#         for x in range(1, len(longer) + 1):
-#             test.append([longer[-x], current_digit])
-#
-#             test2.append(min(test[-1]))
-#
-#         # print(test)
-#         # print(test2)
-#
-#         test3.append(test2)
-#         # print(test3)
-#
-#     result = LunarInt("0")
-#
-#     for p in test3:
-#         result = result.plus(LunarInt([*reversed(p)]))
-#
-#     return result

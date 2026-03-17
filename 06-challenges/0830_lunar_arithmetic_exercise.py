@@ -115,9 +115,11 @@ lunar3 = lunar1.plus(lunar2)
 lunar4 = lunar1.multiply(lunar2)
 
 print(f"\n===== Lunar Arithmetic =====\n")
+
 print(f" Inputs:")
 print(f"  {lunar1}")
 print(f"  {lunar2}\n")
+
 print(f"With lunar Arithmetic:")
 print(f"  {lunar1} + {lunar2} = {lunar3}")
 
