@@ -110,6 +110,5 @@ delete_button.grid(row=1, column=1)
 
 
 
-
 if __name__ == "__main__":
     main_window.mainloop()
