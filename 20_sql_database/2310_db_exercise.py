@@ -125,6 +125,7 @@ def select_all(classparam):
         result = []
         for record in records:
             result.append(record)
+        print(records)
     return result
 
 
@@ -135,4 +136,5 @@ def get_record(classparam, record_id):
 
 print(get_record(Customer, 8))
 print(get_record(Product, 1))
+print(select_all(Customer))
 
