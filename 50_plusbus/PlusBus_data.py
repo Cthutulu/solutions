@@ -14,7 +14,7 @@ class Customer(Base):
     phone_number = Column(Integer)
 
     def __repr__(self):
-        return f"Customer: {self.id}   Name: {self.surmane}   Phone Number: {self.phone_number}"
+        return f"Customer: {self.id}   Name: {self.surname}   Phone Number: {self.phone_number}"
 
     def convert_to_tuple(self):
         return self.id, self.surname, self.phone_number

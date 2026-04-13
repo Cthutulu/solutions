@@ -33,6 +33,12 @@ def create_record(record):
 def update_customer(customer):
     with Session(engine) as session:
         session.execute(update(Customer).where(Customer.id == customer.id).values(surname=customer.surname, phone_number=customer.phone_number))
+        session.commit()
+
+def delete_customer(customer):
+    with Session(engine) as session:
+        session.execute(delete(Customer).where(Customer.id == customer.id))
+        session.commit()
 
 
 # endregion Customer
@@ -44,12 +50,9 @@ def update_customer(customer):
 
 
 
-if __name__ == "__main__":  # Executed when invoked directly
+if __name__ == "__main__":
     engine = create_engine(Database, echo=False, future=True)
     Base.metadata.create_all(engine)
-#     select_all(Transport)
-#     print(get_record(Customer, 2))
-#     print(get_record(Aircraft, 3))
-else:  # Executed when imported
+else:
     engine = create_engine(Database, echo=False, future=True)
     Base.metadata.create_all(engine)
