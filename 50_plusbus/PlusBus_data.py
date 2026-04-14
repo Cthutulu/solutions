@@ -31,3 +31,38 @@ class Customer(Base):
         customer = Customer(id=tuple_[0], surname=tuple_[1], phone_number=tuple_[2])
         return customer
 # endregion Customer class
+
+# region Journey class
+class Journey(Base):
+    __tablename__ = "journey"
+    id = Column(Integer, primary_key=True)
+    route = Column(String)
+    date = Column(Date)
+    capacity = Column(Integer)
+
+    def __repr__(self):
+        return f"Journey Route: {self.route}   Date: {self.date}   Capacity: {self.capacity}"
+
+    def convert_to_tuple(self):
+        return self.route, self.date, self.capacity
+
+    def valid(self):
+        try:
+            value = int(self.capacity)
+        except ValueError:
+            return False
+        return value >= 0
+
+    @staticmethod
+    def convert_from_tuple(tuple_):
+        capacity = int(tuple_[2])
+        if capacity <= 0:
+            messagebox.showwarning("", "No space left on journey!")
+        else:
+            date = parser.parse(tuple_[1])
+            journey = Journey(route=tuple_[0], date=date, capacity=capacity)
+            return journey
+
+
+
+# endregion Journey class

@@ -61,14 +61,42 @@ def delete_customer(tree, record):
 # endregion customer functions
 
 # region journey functions
-# def read_journey_entries():
+def read_journey_entries():
+    return entry_journey_route.get(), entry_journey_date.get(), entry_journey_capacity.get()
 
-# def clear_journey_entries():
+def clear_journey_entries():
+    entry_journey_route.delete(0, tk.END)
+    entry_journey_date.delete(0, tk.END)
+    entry_journey_capacity.delete(0, tk.END)
 
+def write_journey_entries(values):
+    entry_journey_route.insert(0, values[0])
+    entry_journey_date.insert(0, values[1])
+    entry_journey_capacity.insert(0, values[2])
 
+def edit_journey(_, tree):
+    index_selected = tree.focus()
+    values = tree.item(index_selected, 'values')
+    clear_journey_entries()
+    write_journey_entries(values)
 
+def create_journey(tree, record):
+    journey =pbd.Journey.convert_from_tuple(record)
+    pbsql.create_record(journey)
+    clear_journey_entries()
+    refresh_treeview(tree, pbd.Journey)
 
+def update_journey(tree, record):
+    journey = pbd.Journey.convert_from_tuple(record)
+    pbsql.update_journey(journey)
+    clear_journey_entries()
+    refresh_treeview(tree, pbd.Journey)
 
+def delete_journey(tree, record):
+    journey = pbd.Journey.convert_from_tuple(record)
+    pbsql.delete_journey(journey)
+    clear_journey_entries()
+    refresh_treeview(tree, pbd.Journey)
 #endregoin journey functions
 
 # region common functions
@@ -192,7 +220,7 @@ tree_journey.heading("capacity", text="Capacity", anchor=tk.CENTER)
 tree_journey.tag_configure('oddrow', background=odd_row)
 tree_journey.tag_configure('evenrow', background=even_row)
 
-# tree_journey.bind("<ButtonRelease-1>", lambda event: edit_journey(event, tree_journey))
+tree_journey.bind("<ButtonRelease-1>", lambda event: edit_journey(event, tree_journey))
 
 controls_frame_journey = tk.Frame(frame_journey)
 controls_frame_journey.grid(row=3, column=0, padx=padx, pady=pady)
@@ -219,11 +247,11 @@ entry_journey_capacity.grid(row=1, column=2, padx=padx, pady=pady)
 button_frame_journey = tk.Frame(controls_frame_journey)
 button_frame_journey.grid(row=1, column=0, padx=padx, pady=pady)
 # Define buttons
-button_create_journey = tk.Button(button_frame_journey, text="Create", command=lambda: create_customer(tree_customer, read_customer_entries()))
+button_create_journey = tk.Button(button_frame_journey, text="Create", command=lambda: create_journey(tree_customer, read_journey_entries()))
 button_create_journey.grid(row=0, column=1, padx=padx, pady=pady)
-button_update_journey = tk.Button(button_frame_journey, text="Update", command=lambda: update_customer(tree_customer, read_customer_entries()))
+button_update_journey = tk.Button(button_frame_journey, text="Update", command=lambda: update_journey(tree_customer, read_journey_entries()))
 button_update_journey.grid(row=0, column=2, padx=padx, pady=pady)
-button_delete_journey = tk.Button(button_frame_journey, text="Delete", command=lambda: delete_customer(tree_customer, read_customer_entries()))
+button_delete_journey = tk.Button(button_frame_journey, text="Delete", command=lambda: delete_journey(tree_customer, read_journey_entries()))
 button_delete_journey.grid(row=0, column=3, padx=padx, pady=pady)
 button_clear_boxes = tk.Button(button_frame_journey, text="Clear Entry Boxes", command=clear_customer_entries)
 button_clear_boxes.grid(row=0, column=4, padx=padx, pady=pady)
@@ -235,4 +263,5 @@ button_clear_boxes.grid(row=0, column=4, padx=padx, pady=pady)
 
 if __name__ == "__main__":
     refresh_treeview(tree_customer, pbd.Customer)
+    refresh_treeview(tree_journey, pbd.Journey)
     main_window.mainloop()
