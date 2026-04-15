@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, select, update, delete
 
 from datetime import date
 
-from PlusBus_data import Customer, Base
+from PlusBus_data import Customer, Journey, Booking,  Base
 
 Database = 'sqlite:///plusbus.db'
 
@@ -43,9 +43,29 @@ def delete_customer(customer):
 
 # endregion Customer
 
+# region Journey
+def update_journey(journey):
+    with Session(engine) as session:
+        session.execute(update(Journey).where(Journey.route == journey.route).values(date=journey.date, capacity=journey.capacity))
+        session.commit()
 
+def delete_journey(journey):
+    with Session(engine) as session:
+        session.execute(delete(Journey).where(Journey.route == journey.route))
+        session.commit()
+# endregion Journey
 
+# region booking
+def update_boking(journey):
+    with Session(engine) as session:
+        session.execute(update(Booking).where(Journey.route == journey.route).values(date=journey.date, capacity=journey.capacity))
+        session.commit()
 
+def delete_journey(journey):
+    with Session(engine) as session:
+        session.execute(delete(Journey).where(Journey.route == journey.route))
+        session.commit()
+# endregion booking
 
 
 

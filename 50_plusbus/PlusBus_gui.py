@@ -99,6 +99,45 @@ def delete_journey(tree, record):
     refresh_treeview(tree, pbd.Journey)
 #endregoin journey functions
 
+# region bokking functions
+def read_booking_entries():
+    return entry_booking_route.get(), entry_booking_customer_id.get(), entry_booking_booked_seats.get()
+
+def clear_booking_entries():
+    entry_booking_route.delete(0, tk.END)
+    entry_booking_customer_id.delete(0, tk.END)
+    entry_booking_booked_seats.delete(0, tk.END)
+
+def write_booking_entries(values):
+    entry_booking_route.insert(0, values[0])
+    entry_booking_customer_id.insert(0, values[1])
+    entry_booking_booked_seats.insert(0, values[2])
+
+def edit_booking(_, tree):
+    index_selected = tree.focus()
+    values = tree.item(index_selected, 'values')
+    clear_booking_entries()
+    write_booking_entries(values)
+
+def create_booking(tree, record):
+    booking =pbd.Booking.convert_from_tuple(record)
+    pbsql.create_record(booking)
+    clear_booking_entries()
+    refresh_treeview(tree, pbd.Booking)
+
+def update_booking(tree, record):
+    booking = pbd.Booking.convert_from_tuple(record)
+    pbsql.update_booking(booking)
+    clear_booking_entries()
+    refresh_treeview(tree, pbd.Booking)
+
+def delete_booking(tree, record):
+    booking = pbd.Booking.convert_from_tuple(record)
+    pbsql.delete_booking(booking)
+    clear_booking_entries()
+    refresh_treeview(tree, pbd.Booking)
+# endregion booking functions
+
 # region common functions
 '''Common Functions'''
 def read_table(tree, class_):
@@ -204,13 +243,13 @@ tree_frame_journey = tk.Frame(frame_journey)
 tree_frame_journey.grid(row=0, column=0, padx=padx, pady=pady)
 tree_scroll_journey = tk.Scrollbar(tree_frame_journey)
 tree_scroll_journey.grid(row=0, column=1, padx=0, pady=pady, sticky='ns')
-tree_journey = ttk.Treeview(tree_frame_journey, yscrollcommand=tree_scroll_customer.set, selectmode="browse")
+tree_journey = ttk.Treeview(tree_frame_journey, yscrollcommand=tree_scroll_journey.set, selectmode="browse")
 tree_journey.grid(row=0, column=0, padx=0, pady=pady)
 tree_scroll_journey.config(command=tree_journey.yview)
 
 tree_journey['columns'] = ("route", "date", "capacity")
 tree_journey.column("#0", width=0, stretch=tk.NO)
-tree_journey.column("route", anchor=tk.E, width=200)
+tree_journey.column("route", anchor=tk.W, width=200)
 tree_journey.column("date", anchor=tk.E, width=80)
 tree_journey.column("capacity", anchor=tk.W, width=60)
 tree_journey.heading("#0", text="", anchor=tk.W)
@@ -230,38 +269,99 @@ edit_frame_journey.grid(row=0, column=0, padx=padx, pady=pady)
 # label and entry for customer id
 label_journey_route = tk.Label(edit_frame_journey, text="Route")
 label_journey_route.grid(row=0, column=0, padx=padx, pady=pady)
-entry_journey_route = tk.Entry(edit_frame_journey, width=4, justify="right")
+entry_journey_route = tk.Entry(edit_frame_journey, width=30, justify="left")
 entry_journey_route.grid(row=1, column=0, padx=padx, pady=pady)
 # label and entry for customer surnames
 label_journey_date = tk.Label(edit_frame_journey, text="Date")
 label_journey_date.grid(row=0, column=1, padx=padx, pady=pady)
-entry_journey_date = tk.Entry(edit_frame_journey, width=14, justify="right")
+entry_journey_date = tk.Entry(edit_frame_journey, width=10, justify="right")
 entry_journey_date.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for customer phone numbers
-label_journey_capacity = tk.Label(edit_frame_journey, text="Phone Number")
+label_journey_capacity = tk.Label(edit_frame_journey, text="capacity")
 label_journey_capacity.grid(row=0, column=2, padx=padx, pady=pady)
-entry_journey_capacity = tk.Entry(edit_frame_journey, width=16)
+entry_journey_capacity = tk.Entry(edit_frame_journey, width=5)
 entry_journey_capacity.grid(row=1, column=2, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
 button_frame_journey = tk.Frame(controls_frame_journey)
 button_frame_journey.grid(row=1, column=0, padx=padx, pady=pady)
 # Define buttons
-button_create_journey = tk.Button(button_frame_journey, text="Create", command=lambda: create_journey(tree_customer, read_journey_entries()))
+button_create_journey = tk.Button(button_frame_journey, text="Create", command=lambda: create_journey(tree_journey, read_journey_entries()))
 button_create_journey.grid(row=0, column=1, padx=padx, pady=pady)
-button_update_journey = tk.Button(button_frame_journey, text="Update", command=lambda: update_journey(tree_customer, read_journey_entries()))
+button_update_journey = tk.Button(button_frame_journey, text="Update", command=lambda: update_journey(tree_journey, read_journey_entries()))
 button_update_journey.grid(row=0, column=2, padx=padx, pady=pady)
-button_delete_journey = tk.Button(button_frame_journey, text="Delete", command=lambda: delete_journey(tree_customer, read_journey_entries()))
+button_delete_journey = tk.Button(button_frame_journey, text="Delete", command=lambda: delete_journey(tree_journey, read_journey_entries()))
 button_delete_journey.grid(row=0, column=3, padx=padx, pady=pady)
-button_clear_boxes = tk.Button(button_frame_journey, text="Clear Entry Boxes", command=clear_customer_entries)
+button_clear_boxes = tk.Button(button_frame_journey, text="Clear Entry Boxes", command=clear_journey_entries)
 button_clear_boxes.grid(row=0, column=4, padx=padx, pady=pady)
 #endregion journey treeview
 
+# region Booking
+'''Bookings:'''
+frame_booking = tk.LabelFrame(main_window, text="Bookings")
+frame_booking.grid(row=0, column=2, padx=0, pady=0, sticky=tk.N)
 
+tree_frame_booking = tk.Frame(frame_booking)
+tree_frame_booking.grid(row=0, column=0, padx=padx, pady=pady)
+tree_scroll_booking = tk.Scrollbar(tree_frame_booking)
+tree_scroll_booking.grid(row=0, column=1, padx=0, pady=pady, sticky='ns')
+tree_booking = ttk.Treeview(tree_frame_booking, yscrollcommand=tree_scroll_booking.set, selectmode="browse")
+tree_booking.grid(row=0, column=0, padx=0, pady=pady)
+tree_scroll_booking.config(command=tree_booking.yview)
+
+tree_booking['columns'] = ("route", "customer_id", "booked_seats")
+tree_booking.column("#0", width=0, stretch=tk.NO)
+tree_booking.column("route", anchor=tk.W, width=200)
+tree_booking.column("customer_id", anchor=tk.E, width=80)
+tree_booking.column("booked_seats", anchor=tk.W, width=60)
+tree_booking.heading("#0", text="", anchor=tk.W)
+tree_booking.heading("route", text="Route", anchor=tk.CENTER)
+tree_booking.heading("customer_id", text="Customer ID", anchor=tk.CENTER)
+tree_booking.heading("booked_seats", text="Booked Seats", anchor=tk.CENTER)
+tree_booking.tag_configure('oddrow', background=odd_row)
+tree_booking.tag_configure('evenrow', background=even_row)
+
+tree_booking.bind("<ButtonRelease-1>", lambda event: edit_booking(event, tree_booking))
+
+controls_frame_booking = tk.Frame(frame_booking)
+controls_frame_booking.grid(row=3, column=0, padx=padx, pady=pady)
+
+edit_frame_booking = tk.Frame(controls_frame_booking)
+edit_frame_booking.grid(row=0, column=0, padx=padx, pady=pady)
+# label and entry for customer id
+label_booking_route = tk.Label(edit_frame_booking, text="Route")
+label_booking_route.grid(row=0, column=0, padx=padx, pady=pady)
+entry_booking_route = tk.Entry(edit_frame_booking, width=30, justify="left")
+entry_booking_route.grid(row=1, column=0, padx=padx, pady=pady)
+# label and entry for customer surnames
+label_booking_customer_id = tk.Label(edit_frame_booking, text="Customer ID")
+label_booking_customer_id.grid(row=0, column=1, padx=padx, pady=pady)
+entry_booking_customer_id = tk.Entry(edit_frame_booking, width=10, justify="right")
+entry_booking_customer_id.grid(row=1, column=1, padx=padx, pady=pady)
+# label and entry for customer phone numbers
+label_booking_booked_seats = tk.Label(edit_frame_booking, text="Booked Seats")
+label_booking_booked_seats.grid(row=0, column=2, padx=padx, pady=pady)
+entry_booking_booked_seats = tk.Entry(edit_frame_booking, width=5)
+entry_booking_booked_seats.grid(row=1, column=2, padx=padx, pady=pady)
+
+# Define Frame which contains buttons
+button_frame_booking = tk.Frame(controls_frame_booking)
+button_frame_booking.grid(row=1, column=0, padx=padx, pady=pady)
+# Define buttons
+button_create_booking = tk.Button(button_frame_booking, text="Create", command=lambda: create_booking(tree_booking, read_booking_entries()))
+button_create_booking.grid(row=0, column=1, padx=padx, pady=pady)
+button_update_booking = tk.Button(button_frame_booking, text="Update", command=lambda: update_booking(tree_booking, read_booking_entries()))
+button_update_booking.grid(row=0, column=2, padx=padx, pady=pady)
+button_delete_booking = tk.Button(button_frame_booking, text="Delete", command=lambda: delete_booking(tree_booking, read_booking_entries()))
+button_delete_booking.grid(row=0, column=3, padx=padx, pady=pady)
+button_clear_boxes = tk.Button(button_frame_booking, text="Clear Entry Boxes", command=clear_booking_entries)
+button_clear_boxes.grid(row=0, column=4, padx=padx, pady=pady)
+# endregion booking
 
 
 
 if __name__ == "__main__":
     refresh_treeview(tree_customer, pbd.Customer)
     refresh_treeview(tree_journey, pbd.Journey)
+    refresh_treeview(tree_booking, pbd.Booking)
     main_window.mainloop()

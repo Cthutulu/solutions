@@ -62,7 +62,27 @@ class Journey(Base):
             date = parser.parse(tuple_[1])
             journey = Journey(route=tuple_[0], date=date, capacity=capacity)
             return journey
-
-
-
 # endregion Journey class
+
+# region booking class
+class Booking(Base):
+    __tablename__ = "booking"
+    journey_route = Column(String, ForeignKey("journey.route"), nullable=False, primary_key=True)
+    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
+    booked_seats = Column(Integer)
+
+    def __repr__(self):
+        return f""
+
+    def convert_to_tuple(self):
+        return self.journey_route, self.customer_id, self.booked_seats
+
+    def valid(self):
+        try:
+            value = int(self.customer_id)
+        except ValueError:
+            return False
+        return value >= 0
+
+
+# endregion booking class
