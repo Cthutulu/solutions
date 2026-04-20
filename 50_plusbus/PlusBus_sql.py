@@ -56,14 +56,14 @@ def delete_journey(journey):
 # endregion Journey
 
 # region booking
-def update_boking(journey):
+def update_booking(booking):
     with Session(engine) as session:
-        session.execute(update(Booking).where(Journey.route == journey.route).values(date=journey.date, capacity=journey.capacity))
+        session.execute(update(Booking).where(Booking.id == booking.id).values(journey_id=booking.journey_id, journey_route=booking.journey_route, customer_id=booking.customer_id, booked_seats=booking.booked_seats))
         session.commit()
 
-def delete_journey(journey):
+def delete_booking(booking):
     with Session(engine) as session:
-        session.execute(delete(Journey).where(Journey.route == journey.route))
+        session.execute(delete(Booking).where(Booking.id == booking.id))
         session.commit()
 # endregion booking
 

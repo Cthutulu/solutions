@@ -41,10 +41,10 @@ class Journey(Base):
     capacity = Column(Integer)
 
     def __repr__(self):
-        return f"Journey Route: {self.route}   Date: {self.date}   Capacity: {self.capacity}"
+        return f"Journey ID: {self.id}   Route: {self.route}   Date: {self.date}   Capacity: {self.capacity}"
 
     def convert_to_tuple(self):
-        return self.route, self.date, self.capacity
+        return self.id, self.route, self.date, self.capacity
 
     def valid(self):
         try:
@@ -55,19 +55,21 @@ class Journey(Base):
 
     @staticmethod
     def convert_from_tuple(tuple_):
-        capacity = int(tuple_[2])
+        capacity = int(tuple_[3])
         if capacity <= 0:
             messagebox.showwarning("", "No space left on journey!")
         else:
-            date = parser.parse(tuple_[1])
-            journey = Journey(route=tuple_[0], date=date, capacity=capacity)
+            date = parser.parse(tuple_[2])
+            journey = Journey(id=tuple_[0], route=tuple_[1], date=date, capacity=capacity)
             return journey
 # endregion Journey class
 
 # region booking class
 class Booking(Base):
     __tablename__ = "booking"
-    journey_route = Column(String, ForeignKey("journey.route"), nullable=False, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    journey_id = Column(Integer, ForeignKey("journey.id"), nullable=False)
+    journey_route = Column(String)
     customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
     booked_seats = Column(Integer)
 
@@ -75,14 +77,22 @@ class Booking(Base):
         return f""
 
     def convert_to_tuple(self):
-        return self.journey_route, self.customer_id, self.booked_seats
+        return self.id, self.journey_id, self.journey_route, self.customer_id, self.booked_seats
 
     def valid(self):
         try:
-            value = int(self.customer_id)
+            value = int(self.booked_seats)
         except ValueError:
             return False
         return value >= 0
 
+    @staticmethod
+    def convert_from_tuple(tuple_):
+        id = int(tuple_[0]),
+        journey_id = int(tuple_[1])
+        journey_route = tuple_[2]
+        customer_id = int(tuple_[3])
+        booking = Booking(id=id, journey_id=journey_id, journey_route=journey_route, customer_id=customer_id, booked_seats=tuple_[4])
+        return booking
 
 # endregion booking class
