@@ -46,12 +46,12 @@ def delete_customer(customer):
 # region Journey
 def update_journey(journey):
     with Session(engine) as session:
-        session.execute(update(Journey).where(Journey.route == journey.route).values(date=journey.date, capacity=journey.capacity))
+        session.execute(update(Journey).where(Journey.id == journey.id).values(route=journey.route, date=journey.date, capacity=journey.capacity))
         session.commit()
 
 def delete_journey(journey):
     with Session(engine) as session:
-        session.execute(delete(Journey).where(Journey.route == journey.route))
+        session.execute(delete(Journey).where(Journey.id == journey.id))
         session.commit()
 # endregion Journey
 

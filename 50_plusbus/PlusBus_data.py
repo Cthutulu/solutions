@@ -88,11 +88,10 @@ class Booking(Base):
 
     @staticmethod
     def convert_from_tuple(tuple_):
-        id = int(tuple_[0]),
         journey_id = int(tuple_[1])
         journey_route = tuple_[2]
         customer_id = int(tuple_[3])
-        booking = Booking(id=id, journey_id=journey_id, journey_route=journey_route, customer_id=customer_id, booked_seats=tuple_[4])
+        booking = Booking(id=int(tuple_[0]), journey_id=journey_id, journey_route=journey_route, customer_id=customer_id, booked_seats=tuple_[4])
         return booking
 
 # endregion booking class

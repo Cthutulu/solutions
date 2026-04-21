@@ -38,6 +38,8 @@ def write_customer_entries(values):
 def edit_customer(_, tree):
     index_selected = tree.focus()
     values = tree.item(index_selected, 'values')
+    if not values:
+        return
     clear_customer_entries()
     write_customer_entries(values)
 
@@ -82,6 +84,8 @@ def write_journey_entries(values):
 def edit_journey(_, tree):
     index_selected = tree.focus()
     values = tree.item(index_selected, 'values')
+    if not values:
+        return
     clear_journey_entries()
     write_journey_entries(values)
 
@@ -114,6 +118,7 @@ def read_booking_entries():
     return entry_booking_journey_id.get(), entry_booking_route.get(), entry_booking_customer_id.get(), entry_booking_booked_seats.get()
 
 def clear_booking_entries():
+    entry_booking_id.delete(0, tk.END)
     entry_booking_journey_id.delete(0, tk.END)
     entry_booking_route.delete(0, tk.END)
     entry_booking_customer_id.delete(0, tk.END)
@@ -128,26 +133,32 @@ def write_booking_entries(values):
 def edit_booking(_, tree):
     index_selected = tree.focus()
     values = tree.item(index_selected, 'values')
+    if not values:
+        return
     clear_booking_entries()
     write_booking_entries(values)
+    entry_booking_id.delete(0, tk.END)
+    entry_booking_id.insert(0, values[0])
 
 def create_booking(tree, record):
-    booking =pbd.Booking.convert_from_tuple(record)
+    booking = pbd.Booking.convert_from_tuple((0, record[0], record[1], record[2], record[3]))
     pbsql.create_record(booking)
     clear_booking_entries()
     refresh_treeview(tree, pbd.Booking)
 
 def update_booking(tree, record):
-    booking = pbd.Booking.convert_from_tuple(record)
+    booking = pbd.Booking.convert_from_tuple(
+        (entry_booking_id.get(), record[0], record[1], record[2], record[3]))
     pbsql.update_booking(booking)
     clear_booking_entries()
     refresh_treeview(tree, pbd.Booking)
 
 def delete_booking(tree, record):
-    booking = pbd.Booking.convert_from_tuple(record)
+    booking = pbd.Booking(id=entry_booking_id.get())
     pbsql.delete_booking(booking)
     clear_booking_entries()
     refresh_treeview(tree, pbd.Booking)
+
 # endregion booking functions
 
 # region common functions
@@ -352,25 +363,29 @@ controls_frame_booking.grid(row=3, column=0, padx=padx, pady=pady)
 edit_frame_booking = tk.Frame(controls_frame_booking)
 edit_frame_booking.grid(row=0, column=0, padx=padx, pady=pady)
 
+label_booking_id = tk.Label(edit_frame_booking, text="Booking ID")
+label_booking_id.grid(row=0, column=0, padx=padx, pady=pady)
+entry_booking_id = tk.Entry(edit_frame_booking, width=5, justify="right")
+entry_booking_id.grid(row=1, column=0, padx=padx, pady=pady)
 label_booking_journey_id = tk.Label(edit_frame_booking, text="Journey ID")
-label_booking_journey_id.grid(row=0, column=0, padx=padx, pady=pady)
+label_booking_journey_id.grid(row=0, column=1, padx=padx, pady=pady)
 entry_booking_journey_id = tk.Entry(edit_frame_booking, width=5, justify="left")
-entry_booking_journey_id.grid(row=1, column=0, padx=padx, pady=pady)
+entry_booking_journey_id.grid(row=1, column=1, padx=padx, pady=pady)
 # label and entry for customer id
 label_booking_route = tk.Label(edit_frame_booking, text="Route")
-label_booking_route.grid(row=0, column=1, padx=padx, pady=pady)
+label_booking_route.grid(row=0, column=2, padx=padx, pady=pady)
 entry_booking_route = tk.Entry(edit_frame_booking, width=30, justify="left")
-entry_booking_route.grid(row=1, column=1, padx=padx, pady=pady)
+entry_booking_route.grid(row=1, column=2, padx=padx, pady=pady)
 # label and entry for customer surnames
 label_booking_customer_id = tk.Label(edit_frame_booking, text="Customer ID")
-label_booking_customer_id.grid(row=0, column=2, padx=padx, pady=pady)
+label_booking_customer_id.grid(row=0, column=3, padx=padx, pady=pady)
 entry_booking_customer_id = tk.Entry(edit_frame_booking, width=5, justify="right")
-entry_booking_customer_id.grid(row=1, column=2, padx=padx, pady=pady)
+entry_booking_customer_id.grid(row=1, column=3, padx=padx, pady=pady)
 # label and entry for customer phone numbers
 label_booking_booked_seats = tk.Label(edit_frame_booking, text="Booked Seats")
-label_booking_booked_seats.grid(row=0, column=3, padx=padx, pady=pady)
+label_booking_booked_seats.grid(row=0, column=4, padx=padx, pady=pady)
 entry_booking_booked_seats = tk.Entry(edit_frame_booking, width=5)
-entry_booking_booked_seats.grid(row=1, column=3, padx=padx, pady=pady)
+entry_booking_booked_seats.grid(row=1, column=4, padx=padx, pady=pady)
 
 # Define Frame which contains buttons
 button_frame_booking = tk.Frame(controls_frame_booking)
