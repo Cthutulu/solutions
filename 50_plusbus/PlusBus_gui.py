@@ -111,9 +111,9 @@ def delete_journey(tree, record):
     pbsql.delete_journey(journey)
     clear_journey_entries()
     refresh_treeview(tree, pbd.Journey)
-#endregoin journey functions
+# endregoin journey functions
 
-# region bokking functions
+# region booking functions
 def read_booking_entries():
     return entry_booking_journey_id.get(), entry_booking_route.get(), entry_booking_customer_id.get(), entry_booking_booked_seats.get()
 
@@ -142,6 +142,12 @@ def edit_booking(_, tree):
 
 def create_booking(tree, record):
     booking = pbd.Booking.convert_from_tuple((0, record[0], record[1], record[2], record[3]))
+    journey = pbsql.get_record(pbd.Journey, booking.journey_id)
+    if not pbf.capacity_available(journey, booking):
+
+        messagebox.showwarning("Capacity Error", "No more seats available!")
+        return
+
     pbsql.create_record(booking)
     clear_booking_entries()
     refresh_treeview(tree, pbd.Booking)
@@ -149,6 +155,17 @@ def create_booking(tree, record):
 def update_booking(tree, record):
     booking = pbd.Booking.convert_from_tuple(
         (entry_booking_id.get(), record[0], record[1], record[2], record[3]))
+    journey = pbsql.get_record(pbd.Journey, booking.journey_id)
+
+    current_booking = pbsql.get_record(pbd.Booking, booking.id)
+    current_seats = int(current_booking.booked_seats) if current_booking else 0
+
+    booked = pbf.booked_seats(journey) - current_seats
+
+    if journey.capacity < booked + int(booking.booked_seats):
+        messagebox.showwarning("Capacity Error", "No more seats available!")
+        return
+
     pbsql.update_booking(booking)
     clear_booking_entries()
     refresh_treeview(tree, pbd.Booking)
