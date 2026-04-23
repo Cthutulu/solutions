@@ -41,6 +41,7 @@ def delete_customer(customer):
         session.commit()
 
 
+
 # endregion Customer
 
 # region Journey

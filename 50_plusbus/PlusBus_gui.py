@@ -145,7 +145,7 @@ def create_booking(tree, record):
     journey = pbsql.get_record(pbd.Journey, booking.journey_id)
     if not pbf.capacity_available(journey, booking):
 
-        messagebox.showwarning("Capacity Error", "No more seats available!")
+        messagebox.showwarning("Capacity Error", "Not enough seats available!")
         return
 
     pbsql.create_record(booking)
@@ -163,7 +163,7 @@ def update_booking(tree, record):
     booked = pbf.booked_seats(journey) - current_seats
 
     if journey.capacity < booked + int(booking.booked_seats):
-        messagebox.showwarning("Capacity Error", "No more seats available!")
+        messagebox.showwarning("Capacity Error", "Not enough seats available!")
         return
 
     pbsql.update_booking(booking)
@@ -425,3 +425,11 @@ if __name__ == "__main__":
     refresh_treeview(tree_journey, pbd.Journey)
     refresh_treeview(tree_booking, pbd.Booking)
     main_window.mainloop()
+
+
+
+    '''
+    Ting der skal gøres:
+    sørg for at der ikke kan bruges - tal i bookedseats, så man ikke kan booke over 100 seats
+    brug noget der hedder try/exept til at sørge for man ikke kan bruge ikke tal i booked seats (altså bogstaver og tegn)
+    '''
