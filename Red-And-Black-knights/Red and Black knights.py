@@ -26,7 +26,7 @@ rows and columns
 
 (x + 1) * 2
 
-
+Archimedes' Spiral
 
 
 """
