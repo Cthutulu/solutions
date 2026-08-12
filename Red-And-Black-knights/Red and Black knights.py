@@ -22,7 +22,6 @@
     * zoome ind og ud
 
 
-
 xy cords
 (2k+1)^2−1
 """
