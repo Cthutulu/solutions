@@ -30,6 +30,8 @@ xy cords
 x = 0
 y = 0
 
+positions = [(0, 0)]
+
 directions = [
     (1, 0),     # 0 Højre
     (0, 1),     # 1 Op
@@ -37,17 +39,28 @@ directions = [
     (0, -1),    # 3 Ned
 ]
 
-direction = 2
-distance = 2
+direction = 0
+distance = 1
+
+for z in range(10):
+    dx, dy = directions[direction]
+
+    for i in range(distance):
+        x = x + dx
+        y = y + dy
+
+        positions.append((x, y))
+
+    direction = direction + 1
+
+    if direction == 4:
+        direction = 0
+
+    if z % 2 == 1:
+        distance = distance + 1
 
 
-dx, dy = directions[direction]
-
-for i in range(distance):
-    x = x + dx
-    y = y + dy
-
-print(x, y)
+print(positions)
 
 
 """
