@@ -25,42 +25,57 @@
 xy cords
 """
 
+size = 11
 
-x = 0
-y = 0
+board = []
 
-positions = [(0, 0)]
+for y in range(size):
+    row = []
 
-directions = [
-    (1, 0),     # 0 Højre
-    (0, 1),     # 1 Op
-    (-1, 0),    # 2 Venstre
-    (0, -1),    # 3 Ned
-]
+    for x in range(size):
+        row.append(0)
 
-direction = 0
-distance = 1
+    board.append(row)
 
-for z in range(6):
-    dx, dy = directions[direction]
-
-    for i in range(distance):
-        x = x + dx
-        y = y + dy
-
-        positions.append((x, y))
-
-    direction = (direction + 1) % 4
-    # direction = direction + 1
-
-    # if direction == 4:
-    #     direction = 0
-
-    if z % 2 == 1:
-        distance = distance + 1
+for row in board:
+    print(row)
 
 
-print(positions)
+# x = 0
+# y = 0
+#
+# positions = [(0, 0)]
+#
+# directions = [
+#     (1, 0),     # 0 Højre
+#     (0, 1),     # 1 Op
+#     (-1, 0),    # 2 Venstre
+#     (0, -1),    # 3 Ned
+# ]
+#
+# direction = 0
+# distance = 1
+#
+# for z in range(6):
+#     dx, dy = directions[direction]
+#
+#     for i in range(distance):
+#         x = x + dx
+#         y = y + dy
+#
+#         positions.append((x, y))
+#
+#     direction = (direction + 1) % 4
+#     # direction = direction + 1
+#
+#     # if direction == 4:
+#     #     direction = 0
+#
+#     if z % 2 == 1:
+#         distance = distance + 1
+#
+#
+# print(positions)
 
 
 # board x * x
