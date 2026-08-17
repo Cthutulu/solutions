@@ -23,7 +23,6 @@
 
 
 xy cords
-(2k+1)^2−1
 """
 
 
@@ -42,7 +41,7 @@ directions = [
 direction = 0
 distance = 1
 
-for z in range(10):
+for z in range(6):
     dx, dy = directions[direction]
 
     for i in range(distance):
@@ -51,10 +50,11 @@ for z in range(10):
 
         positions.append((x, y))
 
-    direction = direction + 1
+    direction = (direction + 1) % 4
+    # direction = direction + 1
 
-    if direction == 4:
-        direction = 0
+    # if direction == 4:
+    #     direction = 0
 
     if z % 2 == 1:
         distance = distance + 1
@@ -62,6 +62,12 @@ for z in range(10):
 
 print(positions)
 
+
+# board x * x
+# a way to whem you append positions that it then gives a number there
+#  @staticmethod
+#     def some_funtion(test):
+#         print(test)
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
@@ -72,3 +78,5 @@ print(positions)
 (-3,-2)(-2,-2)(-1,-2) (0,-2) (1,-2) (2,-2) (3,-2)
 (-3,-3)(-2,-3)(-1,-3) (0,-3) (1,-3) (2,-3) (3,-3)
 """
+
+# class knight/brik:
