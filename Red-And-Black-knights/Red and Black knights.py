@@ -37,10 +37,26 @@ for y in range(size):
 
     board.append(row)
 
+offset_x = size // 2
+offset_y = size // 2
+
+directions = [
+    (1, 0),     # 0 Højre
+    (0, 1),     # 1 Op
+    (-1, 0),    # 2 Venstre
+    (0, -1),    # 3 Ned
+]
+
+direction = 0
+distance = 1
+
+board[0 + offset_x][0 + offset_y] = 1
+
+# def set_square(row, col, value)
+# def get_square()
+
 for row in board:
     print(row)
-
-
 # x = 0
 # y = 0
 #
