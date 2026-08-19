@@ -47,7 +47,7 @@ class Board:
         return self.board[y][x]
 
     def set_square_s(self, s, value):
-        x, y = self.spiral[s]
+        x, y = spiral[s]
 
         x = x + self.offset_x
         y = y + self.offset_y
