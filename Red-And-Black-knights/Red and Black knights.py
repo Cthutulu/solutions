@@ -25,20 +25,42 @@
 xy cords
 """
 
-size = 11
+class Board:
+    def __init__(self, size):
+        self.size = size
+        self.board = []
+        self.offset_x = size // 2
+        self.offset_y = size // 2
 
-board = []
+        for y in range(size):
+            row = []
 
-for y in range(size):
-    row = []
+            for x in range(size):
+                row.append(0)
 
-    for x in range(size):
-        row.append(0)
+            self.board.append(row)
 
-    board.append(row)
+    def set_square(self, x, y, value):
+        self.board[y][x] = value
 
-offset_x = size // 2
-offset_y = size // 2
+    def get_square(self, x, y):
+        return self.board[y][x]
+
+    def set_square_s(self, s, value):
+        x, y = spiral[s]
+        self.set_square(x, y, value)
+
+board = Board(11)
+
+board.set_square(board.offset_x, board.offset_y, 1)
+
+x = 0
+y = 0
+number = 0
+
+board.set_square(x + board.offset_x, y + board.offset_y, number)
+
+spiral = [(0, 0)]
 
 directions = [
     (1, 0),     # 0 Højre
@@ -50,55 +72,33 @@ directions = [
 direction = 0
 distance = 1
 
-board[0 + offset_x][0 + offset_y] = 1
+for z in range(6):
+    dx, dy = directions[direction]
 
-# def set_square(row, col, value)
-# def get_square()
+    for i in range(distance):
+        x = x + dx
+        y = y + dy
 
-for row in board:
+        number = number + 1
+
+        spiral.append((x + board.offset_x, y + board.offset_y, number))
+
+    direction = (direction + 1) % 4
+    # direction = direction + 1
+
+    # if direction == 4:
+    #     direction = 0
+
+    if z % 2 == 1:
+        distance = distance + 1
+
+for row in board.board:
     print(row)
-# x = 0
-# y = 0
-#
-# positions = [(0, 0)]
-#
-# directions = [
-#     (1, 0),     # 0 Højre
-#     (0, 1),     # 1 Op
-#     (-1, 0),    # 2 Venstre
-#     (0, -1),    # 3 Ned
-# ]
-#
-# direction = 0
-# distance = 1
-#
-# for z in range(6):
-#     dx, dy = directions[direction]
-#
-#     for i in range(distance):
-#         x = x + dx
-#         y = y + dy
-#
-#         positions.append((x, y))
-#
-#     direction = (direction + 1) % 4
-#     # direction = direction + 1
-#
-#     # if direction == 4:
-#     #     direction = 0
-#
-#     if z % 2 == 1:
-#         distance = distance + 1
-#
-#
-# print(positions)
 
-
-# board x * x
-# a way to whem you append positions that it then gives a number there
-#  @staticmethod
-#     def some_funtion(test):
-#         print(test)
+# flyt helle dannelsen af spiral in i init
+# get_square_s
+# actually lav en spiral af tal
+# gør så den nemt kans skifte mellem s tal (spiral tal), og x y tal
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
