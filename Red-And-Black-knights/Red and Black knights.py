@@ -47,7 +47,11 @@ class Board:
         return self.board[y][x]
 
     def set_square_s(self, s, value):
-        x, y = spiral[s]
+        x, y = self.spiral[s]
+
+        x = x + self.offset_x
+        y = y + self.offset_y
+
         self.set_square(x, y, value)
 
 board = Board(11)
@@ -81,7 +85,7 @@ for z in range(6):
 
         number = number + 1
 
-        spiral.append((x + board.offset_x, y + board.offset_y, number))
+        spiral.append((x, y))
 
     direction = (direction + 1) % 4
     # direction = direction + 1
@@ -94,6 +98,7 @@ for z in range(6):
 
 for row in board.board:
     print(row)
+
 
 # flyt helle dannelsen af spiral in i init
 # get_square_s
