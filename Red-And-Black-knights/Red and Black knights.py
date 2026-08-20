@@ -40,6 +40,47 @@ class Board:
 
             self.board.append(row)
 
+        self.spiral = self.make_spiral()
+
+        for s in range(len(self.spiral)):
+            self.set_square_s(s, s)
+
+    def make_spiral(self):
+        spiral = [(0,0)]
+
+        x = 0
+        y = 0
+        direction = 0
+        distance = 1
+
+        directions = [
+            (1, 0),  # 0 Højre
+            (0, 1),  # 1 Op
+            (-1, 0),  # 2 Venstre
+            (0, -1),  # 3 Ned
+        ]
+
+        # len(
+        for z in range(20):
+            dx, dy = directions[direction]
+
+            for i in range(distance):
+                x = x + dx
+                y = y + dy
+
+                spiral.append((x, y))
+
+            direction = (direction + 1) % 4
+            # direction = direction + 1
+
+            # if direction == 4:
+            #     direction = 0
+
+            if z % 2 == 1:
+                distance = distance + 1
+
+        return spiral
+
     def set_square(self, x, y, value):
         self.board[y][x] = value
 
@@ -47,54 +88,14 @@ class Board:
         return self.board[y][x]
 
     def set_square_s(self, s, value):
-        x, y = spiral[s]
+        x, y = self.spiral[s]
 
         x = x + self.offset_x
-        y = y + self.offset_y
+        y = self.offset_y - y
 
         self.set_square(x, y, value)
 
 board = Board(11)
-
-board.set_square(board.offset_x, board.offset_y, 1)
-
-x = 0
-y = 0
-number = 0
-
-board.set_square(x + board.offset_x, y + board.offset_y, number)
-
-spiral = [(0, 0)]
-
-directions = [
-    (1, 0),     # 0 Højre
-    (0, 1),     # 1 Op
-    (-1, 0),    # 2 Venstre
-    (0, -1),    # 3 Ned
-]
-
-direction = 0
-distance = 1
-
-for z in range(6):
-    dx, dy = directions[direction]
-
-    for i in range(distance):
-        x = x + dx
-        y = y + dy
-
-        number = number + 1
-
-        spiral.append((x, y))
-
-    direction = (direction + 1) % 4
-    # direction = direction + 1
-
-    # if direction == 4:
-    #     direction = 0
-
-    if z % 2 == 1:
-        distance = distance + 1
 
 for row in board.board:
     print(row)
@@ -115,4 +116,9 @@ for row in board.board:
 (-3,-3)(-2,-3)(-1,-3) (0,-3) (1,-3) (2,-3) (3,-3)
 """
 
-# class knight/brik:
+"""
+en function med input x,y og output s
+en klasse brik, med attributer, position, bevægelse dx og dy
+function med input brik og output all truede fælter
+
+"""
