@@ -109,6 +109,16 @@ class Board:
     def xy_to_s(self, x, y):
         return self.xy_to_spiral.get((x, y))
 
+    def threatened_squares(self, piece):
+        threatened = []
+
+        for x, y in piece.threatened_squares():
+            s = self.xy_to_s(x, y)
+
+            if s is not None: threatened.append(s)
+
+        return threatened
+
 
 
 
@@ -127,24 +137,25 @@ class Knight(Piece):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def threatened_squares(self):
-        moves = [
-            (1, 2),
-            (2, 1),
-            (2, -1),
-            (1, -2),
-            (-1, -2),
-            (-2, -1),
-            (-1, 2),
-            (-2, 1)
-        ]
+    MOVES = [
+        (2, -1),
+        (2, 1),
+        (1, 2),
+        (-1, 2),
+        (-2, 1),
+        (-2, -1),
+        (-1, -2),
+        (1, -2)
+    ]
 
+    def threatened_squares(self):
         threatened = []
 
-        for dx, dy in moves:
-            threatened.append(
-                (self.x + dx, self.y + dy)
-            )
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
 
         return threatened
 
@@ -156,9 +167,10 @@ for row in board.board:
     print(row)
 
 
-knight = Knight(-1, 1)
+knight = Knight(1, 1)
 
 print(knight.threatened_squares())
+print(board.threatened_squares(knight))
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
@@ -170,10 +182,4 @@ print(knight.threatened_squares())
 (-3,-3)(-2,-3)(-1,-3) (0,-3) (1,-3) (2,-3) (3,-3)
 """
 
-"""
-en function med input x,y og output s
-en klasse brik, med attributer, position, bevægelse dx og dy
-function med input brik og output all truede fælter
-
-"""
-
+# matplotlib
