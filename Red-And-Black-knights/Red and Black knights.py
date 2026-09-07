@@ -47,7 +47,7 @@ class Board:
         for s, (x, y) in enumerate(self.spiral):
             self.xy_to_spiral[(x, y)] = s
 
-            self.set_square_s(s, s)
+            # self.set_square_s(s, s)
 
     def make_spiral(self):
         spiral = [(0, 0)]
@@ -109,15 +109,9 @@ class Board:
     def xy_to_s(self, x, y):
         return self.xy_to_spiral.get((x, y))
 
-    def threatened_squares(self, piece):
-        threatened = []
-
-        for x, y in piece.threatened_squares():
-            s = self.xy_to_s(x, y)
-
-            if s is not None: threatened.append(s)
-
-        return threatened
+    def mark_threatened_squares(self, piece):
+        for s in piece.threatened_squares_s(self):
+            self.set_square_s(s, 1)
 
 
 
@@ -128,6 +122,9 @@ class Piece:
         self.y = y
 
     def threatened_squares(self):
+        pass
+
+    def threatened_squares_s(self, board):
         pass
 
 
@@ -159,18 +156,28 @@ class Knight(Piece):
 
         return threatened
 
+    def threatened_squares_s(self, board):
+        threatened = []
+
+        for x, y in self.threatened_squares():
+            s = board.xy_to_s(x, y)
+
+            if s is not None: threatened.append(s)
+
+        return threatened
 
 
 board = Board(11)
 
-for row in board.board:
-    print(row)
+knight = Knight(0, 0)
 
-
-knight = Knight(1, 1)
+board.mark_threatened_squares(knight)
 
 print(knight.threatened_squares())
-print(board.threatened_squares(knight))
+print(knight.threatened_squares_s(board))
+
+for row in board.board:
+    print(row)
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
