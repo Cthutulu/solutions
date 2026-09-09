@@ -111,28 +111,37 @@ class Board:
 
     def mark_threatened_squares(self, piece):
         for s in piece.threatened_squares_s(self):
-            self.set_square_s(s, 1)
+            self.set_square_s(s, piece.value)
 
 
 
 
 class Piece:
-    def __init__(self, x, y):
+    def __init__(self, x, y, value):
         self.x = x
         self.y = y
+        self.value = value
 
     def threatened_squares(self):
         pass
 
     def threatened_squares_s(self, board):
-        pass
+        threatened = []
+
+        for x, y in self.threatened_squares():
+            s = board.xy_to_s(x, y)
+
+            if s is not None:
+                threatened.append(s)
+
+        return threatened
 
 
 
 class Knight(Piece):
 
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, value):
+        super().__init__(x, y, value)
 
     MOVES = [
         (2, -1),
@@ -167,11 +176,13 @@ class Knight(Piece):
         return threatened
 
 
-board = Board(11)
+board = Board(7)
 
-knight = Knight(0, 0)
+knight = Knight(0, 0, 1)
+knight2 = Knight(0, 1, 2)
 
 board.mark_threatened_squares(knight)
+board.mark_threatened_squares(knight2)
 
 print(knight.threatened_squares())
 print(knight.threatened_squares_s(board))
