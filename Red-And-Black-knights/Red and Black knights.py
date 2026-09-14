@@ -32,6 +32,7 @@ class Board:
         self.offset_x = size // 2
         self.offset_y = size // 2
         # self.pieces = []
+
         self.players = [
             Player(1, Knight),
             Player(2, Knight)
@@ -116,25 +117,34 @@ class Board:
     def xy_to_s(self, x, y):
         return self.xy_to_spiral.get((x, y))
 
-    def is_occopied_s(self, piece):
-        pass
+    def is_occupied_s(self, s):
+        return self.get_square_s(s) != 0
 
     def add_piece(self, piece):
         # self.pieces.append(piece)
-        self.mark_threatened_squares(piece)
+
+        for s in range(len(self.spiral)):
+            if not self.is_occupied_s(s):
+                x, y = self.s_to_xy(s)
+
+                piece.x = x
+                piece.y = y
+
+                self.set_square_s(s, piece)
+
+                self.mark_threatened_squares(piece)
+
+                return s
 
     def mark_threatened_squares(self, piece):
         for s in piece.threatened_squares_s(self):
             self.set_square_s(s, piece.value)
 
 
-
-
 class Player:
     def __init__(self, value, piece_type):
         self.value = value
         self.piece_type = piece_type
-
 
 
 class Piece:
@@ -196,6 +206,9 @@ board = Board(9)
 #
 # print(knight.threatened_squares())
 # print(knight.threatened_squares_s(board))
+
+knight = Knight(0, 0, 1)
+board.add_piece(knight)
 
 for row in board.board:
     print(row)
