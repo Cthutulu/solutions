@@ -116,6 +116,9 @@ class Board:
     def xy_to_s(self, x, y):
         return self.xy_to_spiral.get((x, y))
 
+    def is_occopied_s(self, piece):
+        pass
+
     def add_piece(self, piece):
         # self.pieces.append(piece)
         self.mark_threatened_squares(piece)
@@ -123,6 +126,7 @@ class Board:
     def mark_threatened_squares(self, piece):
         for s in piece.threatened_squares_s(self):
             self.set_square_s(s, piece.value)
+
 
 
 
@@ -182,7 +186,7 @@ class Knight(Piece):
         return threatened
 
 
-board = Board(7)
+board = Board(9)
 
 # knight = Knight(0, 0, 1)
 # knight2 = Knight(0, 1, 2)
