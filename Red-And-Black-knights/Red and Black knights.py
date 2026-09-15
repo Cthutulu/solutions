@@ -34,8 +34,8 @@ class Board:
         # self.pieces = []
 
         self.players = [
-            Player(1, Knight),
-            Player(2, Knight)
+            Player(1, "Red", Knight),
+            Player(2, "Black", Knight)
         ]
 
         self.turn = 0
@@ -118,13 +118,27 @@ class Board:
         return self.xy_to_spiral.get((x, y))
 
     def is_occupied_s(self, s):
-        return self.get_square_s(s) != 0
+        return isinstance(self.get_square_s(s), Piece)
 
-    def add_piece(self, piece):
+    def is_available_s(self, s, player):
+        if self.is_occupied_s(s):
+            return False
+
+        square = self.get_square_s(s)
+
+        if square == 0:
+            return True
+
+        if square == player.value:
+            return True
+
+        return False
+
+    def add_piece(self, piece, player):
         # self.pieces.append(piece)
 
         for s in range(len(self.spiral)):
-            if not self.is_occupied_s(s):
+            if self.is_available_s(s, player):
                 x, y = self.s_to_xy(s)
 
                 piece.x = x
@@ -142,16 +156,21 @@ class Board:
 
 
 class Player:
-    def __init__(self, value, piece_type):
+    def __init__(self, value, color, piece_type):
         self.value = value
+        self.color = color
         self.piece_type = piece_type
 
 
 class Piece:
-    def __init__(self, x, y, value):
+    def __init__(self, x, y, value, color):
         self.x = x
         self.y = y
         self.value = value
+        self.color = color
+
+    def __repr__(self):
+        return self.color
 
     def threatened_squares(self):
         pass
@@ -170,8 +189,8 @@ class Piece:
 
 class Knight(Piece):
 
-    def __init__(self, x, y, value):
-        super().__init__(x, y, value)
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
 
     MOVES = [
         (2, -1),
@@ -196,19 +215,16 @@ class Knight(Piece):
         return threatened
 
 
-board = Board(9)
+board = Board(7)
 
-# knight = Knight(0, 0, 1)
-# knight2 = Knight(0, 1, 2)
-#
-# board.add_piece(knight)
-# board.add_piece(knight2)
+knight = Knight(None, None, 1, "Red")
+knight2 = Knight(None, None, 2, "Black")
+
+board.add_piece(knight, board.players[0])
+board.add_piece(knight2, board.players[1])
 #
 # print(knight.threatened_squares())
 # print(knight.threatened_squares_s(board))
-
-knight = Knight(0, 0, 1)
-board.add_piece(knight)
 
 for row in board.board:
     print(row)
