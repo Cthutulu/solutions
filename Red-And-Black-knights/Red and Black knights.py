@@ -34,8 +34,8 @@ class Board:
         # self.pieces = []
 
         self.players = [
-            Player(1, "Red", Knight),
-            Player(2, "Black", Knight)
+            Player(1, "R", Knight),
+            Player(2, "B", Knight)
         ]
 
         self.turn = 0
@@ -152,7 +152,16 @@ class Board:
 
     def mark_threatened_squares(self, piece):
         for s in piece.threatened_squares_s(self):
-            self.set_square_s(s, piece.value)
+            if self.is_occupied_s(s):
+                continue
+
+            square = self.get_square_s(s)
+
+            if square == 0:
+                self.set_square_s(s, piece.value)
+
+            elif square != piece.value:
+                self.set_square_s(s, None)
 
 
 class Player:
@@ -217,17 +226,47 @@ class Knight(Piece):
 
 board = Board(7)
 
-knight = Knight(None, None, 1, "Red")
-knight2 = Knight(None, None, 2, "Black")
-
+knight = Knight(None, None, 1, "R")
 board.add_piece(knight, board.players[0])
+
+knight2 = Knight(None, None, 2, "B")
 board.add_piece(knight2, board.players[1])
+
+knight = Knight(None, None, 1, "R")
+board.add_piece(knight, board.players[0])
+
+knight2 = Knight(None, None, 2, "B")
+board.add_piece(knight2, board.players[1])
+
+knight = Knight(None, None, 1, "R")
+board.add_piece(knight, board.players[0])
+
+knight2 = Knight(None, None, 2, "B")
+board.add_piece(knight2, board.players[1])
+
+knight = Knight(None, None, 1, "R")
+board.add_piece(knight, board.players[0])
+
+knight2 = Knight(None, None, 2, "B")
+board.add_piece(knight2, board.players[1])
+
+knight = Knight(None, None, 1, "R")
+board.add_piece(knight, board.players[0])
+
+knight2 = Knight(None, None, 2, "B")
+board.add_piece(knight2, board.players[1])
+
+knight = Knight(None, None, 1, "R")
+board.add_piece(knight, board.players[0])
 #
 # print(knight.threatened_squares())
 # print(knight.threatened_squares_s(board))
 
 for row in board.board:
-    print(row)
+    print([
+        type("Empty", (), {"__repr__": lambda self: "-"})() if square is None else square
+        for square in row
+    ])
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
