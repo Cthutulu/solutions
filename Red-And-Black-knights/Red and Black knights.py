@@ -92,7 +92,7 @@ class Board:
     def play(self):
         pass
         # player = self.players
-        # piece =
+        # piece = player.piece_type
         #
         #
         # self.turn = self.turn % len(self.players)
