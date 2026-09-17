@@ -89,6 +89,14 @@ class Board:
 
         return spiral
 
+    def play(self):
+        pass
+        # player = self.players
+        # piece =
+        #
+        #
+        # self.turn = self.turn % len(self.players)
+
     def set_square(self, x, y, value):
         self.board[y][x] = value
 
@@ -161,7 +169,7 @@ class Board:
                 self.set_square_s(s, piece.value)
 
             elif square != piece.value:
-                self.set_square_s(s, None)
+                self.set_square_s(s, "-")
 
 
 class Player:
@@ -263,10 +271,7 @@ board.add_piece(knight, board.players[0])
 # print(knight.threatened_squares_s(board))
 
 for row in board.board:
-    print([
-        type("Empty", (), {"__repr__": lambda self: "-"})() if square is None else square
-        for square in row
-    ])
+    print(row)
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
