@@ -90,12 +90,19 @@ class Board:
         return spiral
 
     def play(self):
-        pass
-        # player = self.players
-        # piece = player.piece_type
-        #
-        #
-        # self.turn = self.turn % len(self.players)
+        while True:
+            player = self.players[self.turn]
+            piece = player.piece_type(
+                None,
+                None,
+                player.value,
+                player.color
+            )
+
+            if not self.add_piece(piece, player):
+                break
+
+        self.turn = self.turn % len(self.players)
 
     def set_square(self, x, y, value):
         self.board[y][x] = value
