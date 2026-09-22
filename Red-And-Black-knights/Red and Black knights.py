@@ -99,10 +99,10 @@ class Board:
                 player.color
             )
 
-            if not self.add_piece(piece, player):
+            if self.add_piece(piece, player) is None:
                 break
 
-        self.turn = self.turn % len(self.players)
+            self.turn = (self.turn + 1) % len(self.players)
 
     def set_square(self, x, y, value):
         self.board[y][x] = value
@@ -164,6 +164,8 @@ class Board:
                 self.mark_threatened_squares(piece)
 
                 return s
+
+        return None
 
     def mark_threatened_squares(self, piece):
         for s in piece.threatened_squares_s(self):
@@ -239,40 +241,15 @@ class Knight(Piece):
         return threatened
 
 
-board = Board(7)
+board = Board(101)
+board.play()
 
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
+# knight = Knight(None, None, 1, "R")
+# board.add_piece(knight, board.players[0])
+#
+# knight2 = Knight(None, None, 2, "B")
+# board.add_piece(knight2, board.players[1])
 
-knight2 = Knight(None, None, 2, "B")
-board.add_piece(knight2, board.players[1])
-
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
-
-knight2 = Knight(None, None, 2, "B")
-board.add_piece(knight2, board.players[1])
-
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
-
-knight2 = Knight(None, None, 2, "B")
-board.add_piece(knight2, board.players[1])
-
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
-
-knight2 = Knight(None, None, 2, "B")
-board.add_piece(knight2, board.players[1])
-
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
-
-knight2 = Knight(None, None, 2, "B")
-board.add_piece(knight2, board.players[1])
-
-knight = Knight(None, None, 1, "R")
-board.add_piece(knight, board.players[0])
 #
 # print(knight.threatened_squares())
 # print(knight.threatened_squares_s(board))
