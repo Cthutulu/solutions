@@ -25,6 +25,11 @@
 xy cords
 """
 
+import time
+import cProfile
+import pstats
+
+
 class Board:
     def __init__(self, size):
         self.size = size
@@ -40,6 +45,9 @@ class Board:
 
         self.turn = 0
 
+        self.find_time = 0
+        self.threat_time = 0
+
         for y in range(size):
             row = []
 
@@ -49,6 +57,9 @@ class Board:
             self.board.append(row)
 
         self.spiral = self.make_spiral()
+
+        self.next_unoccupied = list(range(1, len(self.spiral))) + [None]
+        self.first_unoccupied = 0
 
         self.xy_to_spiral = {}
 
@@ -89,8 +100,22 @@ class Board:
 
         return spiral
 
+    def remove_unoccupied(self, s):
+        if s == self.first_unoccupied:
+            self.first_unoccupied = self.next_unoccupied[s]
+            return
+
+        previous = self.first_unoccupied
+
+        while self.next_unoccupied[previous] != s:
+            previous = self.next_unoccupied[previous]
+
+        self.next_unoccupied[previous] = self.next_unoccupied[s]
+
     def play(self):
-        while True:
+        continue_coloring = 0
+
+        while continue_coloring < len(self.players):
             player = self.players[self.turn]
             piece = player.piece_type(
                 None,
@@ -100,7 +125,9 @@ class Board:
             )
 
             if self.add_piece(piece, player) is None:
-                break
+                continue_coloring += 1
+            else:
+                continue_coloring = 0
 
             self.turn = (self.turn + 1) % len(self.players)
 
@@ -152,7 +179,11 @@ class Board:
     def add_piece(self, piece, player):
         # self.pieces.append(piece)
 
-        for s in range(len(self.spiral)):
+        start = time.perf_counter()
+
+        s = self.first_unoccupied
+
+        while s is not None:
             if self.is_available_s(s, player):
                 x, y = self.s_to_xy(s)
 
@@ -161,10 +192,21 @@ class Board:
 
                 self.set_square_s(s, piece)
 
+                self.remove_unoccupied(s)
+
+                self.find_time += time.perf_counter() - start
+
+                start = time.perf_counter()
+
                 self.mark_threatened_squares(piece)
+
+                self.threat_time += time.perf_counter() - start
 
                 return s
 
+            s = self.next_unoccupied[s]
+
+        self.find_time += time.perf_counter() - start
         return None
 
     def mark_threatened_squares(self, piece):
@@ -240,22 +282,34 @@ class Knight(Piece):
 
         return threatened
 
+def main():
+    board = Board(101)
+    board.play()
 
-board = Board(101)
-board.play()
+    print("Find time:", board.find_time)
+    print("Threat time:", board.threat_time)
 
-# knight = Knight(None, None, 1, "R")
-# board.add_piece(knight, board.players[0])
-#
-# knight2 = Knight(None, None, 2, "B")
-# board.add_piece(knight2, board.players[1])
+    # knight = Knight(None, None, 1, "R")
+    # board.add_piece(knight, board.players[0])
+    #
+    # knight2 = Knight(None, None, 2, "B")
+    # board.add_piece(knight2, board.players[1])
 
-#
-# print(knight.threatened_squares())
-# print(knight.threatened_squares_s(board))
+    #
+    # print(knight.threatened_squares())
+    # print(knight.threatened_squares_s(board))
 
-for row in board.board:
-    print(row)
+    for row in board.board:
+        print(row)
+
+with cProfile.Profile() as pr:
+    main()
+stats = pstats.Stats(pr)
+stats.sort_stats(pstats.SortKey.CUMULATIVE)
+stats.print_stats()
+
+# main()
+
 
 """
 (-3,3) (-2,3) (-1,3)  (0,3)  (1,3)  (2,3)  (3,3)
