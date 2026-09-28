@@ -58,13 +58,13 @@ class Board:
 
         self.spiral = self.make_spiral()
 
-        self.next_unoccupied = list(range(1, len(self.spiral))) + [None]
-        self.first_unoccupied = 0
-
         self.xy_to_spiral = {}
 
         for s, (x, y) in enumerate(self.spiral):
             self.xy_to_spiral[(x, y)] = s
+
+        for player in self.players:
+            player.available = set(range(len(self.spiral)))
 
             # self.set_square_s(s, s)
 
@@ -99,18 +99,6 @@ class Board:
                 distance = distance + 1
 
         return spiral
-
-    def remove_unoccupied(self, s):
-        if s == self.first_unoccupied:
-            self.first_unoccupied = self.next_unoccupied[s]
-            return
-
-        previous = self.first_unoccupied
-
-        while self.next_unoccupied[previous] != s:
-            previous = self.next_unoccupied[previous]
-
-        self.next_unoccupied[previous] = self.next_unoccupied[s]
 
     def play(self):
         continue_coloring = 0
@@ -177,7 +165,18 @@ class Board:
         return False
 
     def add_piece(self, piece, player):
-        # self.pieces.append(piece)
+        available = player.available
+
+        if not available:
+            return None
+
+        s = available.pop()
+
+        for other_player in self.players:
+            if other_player is not player:
+                other_player.available.pop(s)
+
+
 
         start = time.perf_counter()
 
@@ -209,7 +208,7 @@ class Board:
         self.find_time += time.perf_counter() - start
         return None
 
-    def mark_threatened_squares(self, piece):
+    def mark_threatened_squares(self, piece, player):
         for s in piece.threatened_squares_s(self):
             if self.is_occupied_s(s):
                 continue
@@ -219,15 +218,17 @@ class Board:
             if square == 0:
                 self.set_square_s(s, piece.value)
 
+
             elif square != piece.value:
                 self.set_square_s(s, "-")
-
+                # self.remove_unoccupied(s)
 
 class Player:
     def __init__(self, value, color, piece_type):
         self.value = value
         self.color = color
         self.piece_type = piece_type
+        self.available = list()
 
 
 class Piece:
@@ -322,3 +323,4 @@ stats.print_stats()
 """
 
 # matplotlib
+# .pop
