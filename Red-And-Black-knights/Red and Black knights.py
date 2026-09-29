@@ -65,8 +65,9 @@ class Board:
 
         for player in self.players:
             player.available = set(range(len(self.spiral)))
-
-            # self.set_square_s(s, s)
+        #
+        # for player in self.players:
+        #     player.available = list(range(len(self.spiral)))
 
     def make_spiral(self):
         spiral = [(0, 0)]
@@ -77,8 +78,8 @@ class Board:
         distance = 1
 
         directions = [
-            (1, 0),  # Højre
-            (0, 1),  # Op
+            (1, 0),   # Højre
+            (0, 1),   # Op
             (-1, 0),  # Venstre
             (0, -1),  # Ned
         ]
@@ -118,6 +119,10 @@ class Board:
                 continue_coloring = 0
 
             self.turn = (self.turn + 1) % len(self.players)
+
+    # def remove_available(self, player, s):
+    #     if s in player.available:
+    #         player.available.remove(s)
 
     def set_square(self, x, y, value):
         self.board[y][x] = value
@@ -165,6 +170,8 @@ class Board:
         return False
 
     def add_piece(self, piece, player):
+        start = time.perf_counter()
+
         available = player.available
 
         if not available:
@@ -174,39 +181,30 @@ class Board:
 
         for other_player in self.players:
             if other_player is not player:
-                other_player.available.pop(s)
+                other_player.available.discard(s)
 
+        # s = available.pop(0)
+        #
+        # for other_player in self.players:
+        #     if other_player is not player:
+        #         self.remove_available(other_player, s)
 
+        x, y = self.s_to_xy(s)
+
+        piece.x = x
+        piece.y = y
+
+        self.set_square_s(s, piece)
+
+        self.find_time += time.perf_counter() - start
 
         start = time.perf_counter()
 
-        s = self.first_unoccupied
+        self.mark_threatened_squares(piece, player)
 
-        while s is not None:
-            if self.is_available_s(s, player):
-                x, y = self.s_to_xy(s)
+        self.threat_time += time.perf_counter() - start
 
-                piece.x = x
-                piece.y = y
-
-                self.set_square_s(s, piece)
-
-                self.remove_unoccupied(s)
-
-                self.find_time += time.perf_counter() - start
-
-                start = time.perf_counter()
-
-                self.mark_threatened_squares(piece)
-
-                self.threat_time += time.perf_counter() - start
-
-                return s
-
-            s = self.next_unoccupied[s]
-
-        self.find_time += time.perf_counter() - start
-        return None
+        return s
 
     def mark_threatened_squares(self, piece, player):
         for s in piece.threatened_squares_s(self):
@@ -218,17 +216,32 @@ class Board:
             if square == 0:
                 self.set_square_s(s, piece.value)
 
+                for other_player in self.players:
+                    if other_player is not player:
+                        other_player.available.discard(s)
+
+                # for other_player in self.players:
+                #     if other_player is not player:
+                #         self.remove_available(other_player, s)
+
 
             elif square != piece.value:
                 self.set_square_s(s, "-")
-                # self.remove_unoccupied(s)
+
+                for other_player in self.players:
+                    other_player.available.discard(s)
+
+                # for other_player in self.players:
+                #     self.remove_available(other_player, s)
+
 
 class Player:
     def __init__(self, value, color, piece_type):
         self.value = value
         self.color = color
         self.piece_type = piece_type
-        self.available = list()
+        self.available = set()
+        # self.available = list()
 
 
 class Piece:
@@ -284,21 +297,11 @@ class Knight(Piece):
         return threatened
 
 def main():
-    board = Board(101)
+    board = Board(1001)
     board.play()
 
     print("Find time:", board.find_time)
     print("Threat time:", board.threat_time)
-
-    # knight = Knight(None, None, 1, "R")
-    # board.add_piece(knight, board.players[0])
-    #
-    # knight2 = Knight(None, None, 2, "B")
-    # board.add_piece(knight2, board.players[1])
-
-    #
-    # print(knight.threatened_squares())
-    # print(knight.threatened_squares_s(board))
 
     for row in board.board:
         print(row)
