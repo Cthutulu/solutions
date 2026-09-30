@@ -178,7 +178,7 @@ class Board:
             return None
 
         s = available.pop()
-
+        #
         for other_player in self.players:
             if other_player is not player:
                 other_player.available.discard(s)
@@ -219,7 +219,7 @@ class Board:
                 for other_player in self.players:
                     if other_player is not player:
                         other_player.available.discard(s)
-
+                #
                 # for other_player in self.players:
                 #     if other_player is not player:
                 #         self.remove_available(other_player, s)
@@ -230,7 +230,7 @@ class Board:
 
                 for other_player in self.players:
                     other_player.available.discard(s)
-
+                #
                 # for other_player in self.players:
                 #     self.remove_available(other_player, s)
 
@@ -297,7 +297,7 @@ class Knight(Piece):
         return threatened
 
 def main():
-    board = Board(1001)
+    board = Board(901)
     board.play()
 
     print("Find time:", board.find_time)
