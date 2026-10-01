@@ -28,6 +28,8 @@ xy cords
 import time
 import cProfile
 import pstats
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 
 
 class Board:
@@ -40,7 +42,11 @@ class Board:
 
         self.players = [
             Player(1, "R", Knight),
-            Player(2, "B", Knight)
+            Player(2, "B", Knight),
+            # Player(3, "B2", Knight),
+            # Player(4, "G", Knight),
+            # Player(5, "Y", Knight)
+
         ]
 
         self.turn = 0
@@ -234,6 +240,37 @@ class Board:
                 # for other_player in self.players:
                 #     self.remove_available(other_player, s)
 
+    def show(self):
+        color_indices = {"R": 1, "B": 2, "-": 3}
+        player_colors = {player.value: player.color for player in self.players}
+
+        image = []
+        for row in self.board:
+            image_row = []
+            for square in row:
+                if isinstance(square, Piece):
+                    color = square.color
+                elif square == "-":
+                    color = "-"
+                else:
+                    color = player_colors.get(square)
+
+                image_row.append(color_indices.get(color, 0))
+            image.append(image_row)
+
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.imshow(
+            image,
+            cmap=ListedColormap(["white", "red", "black", "grey"]),
+            vmin=0,
+            vmax=3,
+            interpolation="nearest",
+        )
+        ax.set_axis_off()
+        ax.set_title("Red and Black Knights")
+        fig.tight_layout()
+        plt.show()
+
 
 class Player:
     def __init__(self, value, color, piece_type):
@@ -297,22 +334,23 @@ class Knight(Piece):
         return threatened
 
 def main():
-    board = Board(901)
+    board = Board(1001)
     board.play()
 
     print("Find time:", board.find_time)
     print("Threat time:", board.threat_time)
 
-    for row in board.board:
-        print(row)
+    # for row in board.board:
+    #     print(row)
+    board.show()
 
-with cProfile.Profile() as pr:
-    main()
-stats = pstats.Stats(pr)
-stats.sort_stats(pstats.SortKey.CUMULATIVE)
-stats.print_stats()
+# with cProfile.Profile() as pr:
+#     main()
+# stats = pstats.Stats(pr)
+# stats.sort_stats(pstats.SortKey.CUMULATIVE)
+# stats.print_stats()
 
-# main()
+main()
 
 
 """
