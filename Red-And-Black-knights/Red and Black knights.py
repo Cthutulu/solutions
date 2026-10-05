@@ -41,18 +41,18 @@ class Board:
         # self.pieces = []
 
         self.players = [
-            Player(1, "R", Knight),
-            Player(2, "B", Knight),
-            # Player(3, "B2", Knight),
-            # Player(4, "G", Knight),
-            # Player(5, "Y", Knight)
-
+            Player(1, "R", Vazir),
+            Player(2, "B", Vazir),
+            Player(3, "Y", Vazir),
         ]
 
         self.turn = 0
 
         self.find_time = 0
         self.threat_time = 0
+
+        # Rule change: all players have to threaten a square to make it inaccessible
+        self.threatened_by = {}
 
         for y in range(size):
             row = []
@@ -71,9 +71,6 @@ class Board:
 
         for player in self.players:
             player.available = set(range(len(self.spiral)))
-        #
-        # for player in self.players:
-        #     player.available = list(range(len(self.spiral)))
 
     def make_spiral(self):
         spiral = [(0, 0)]
@@ -125,10 +122,6 @@ class Board:
                 continue_coloring = 0
 
             self.turn = (self.turn + 1) % len(self.players)
-
-    # def remove_available(self, player, s):
-    #     if s in player.available:
-    #         player.available.remove(s)
 
     def set_square(self, x, y, value):
         self.board[y][x] = value
@@ -189,12 +182,6 @@ class Board:
             if other_player is not player:
                 other_player.available.discard(s)
 
-        # s = available.pop(0)
-        #
-        # for other_player in self.players:
-        #     if other_player is not player:
-        #         self.remove_available(other_player, s)
-
         x, y = self.s_to_xy(s)
 
         piece.x = x
@@ -217,7 +204,10 @@ class Board:
             if self.is_occupied_s(s):
                 continue
 
+            # Original Rule
+
             square = self.get_square_s(s)
+
 
             if square == 0:
                 self.set_square_s(s, piece.value)
@@ -225,23 +215,36 @@ class Board:
                 for other_player in self.players:
                     if other_player is not player:
                         other_player.available.discard(s)
-                #
-                # for other_player in self.players:
-                #     if other_player is not player:
-                #         self.remove_available(other_player, s)
-
 
             elif square != piece.value:
                 self.set_square_s(s, "-")
 
                 for other_player in self.players:
                     other_player.available.discard(s)
-                #
-                # for other_player in self.players:
-                #     self.remove_available(other_player, s)
+
+
+            # Rule change: all players have to threaten a square to make it inaccessible
+
+            # if s not in self.threatened_by:
+            #     self.threatened_by[s] = set()
+            #
+            # self.threatened_by[s].add(player.value)
+            #
+            # if len(self.threatened_by[s]) == len(self.players):
+            #     self.set_square_s(s, "-")
+            #
+            #     for other_player in self.players:
+            #         other_player.available.discard(s)
+
 
     def show(self):
-        color_indices = {"R": 1, "B": 2, "-": 3}
+        color_indices = {
+            "R": 1,
+            "B": 2,
+            "Y": 3,
+            "-": 4,
+
+        }
         player_colors = {player.value: player.color for player in self.players}
 
         image = []
@@ -261,9 +264,15 @@ class Board:
         fig, ax = plt.subplots(figsize=(8, 8))
         ax.imshow(
             image,
-            cmap=ListedColormap(["white", "red", "black", "grey"]),
+            cmap=ListedColormap([
+                "white",
+                "red",
+                "Blue",
+                "yellow",
+                "grey",
+            ]),
             vmin=0,
-            vmax=3,
+            vmax=4,
             interpolation="nearest",
         )
         ax.set_axis_off()
@@ -306,6 +315,8 @@ class Piece:
         return threatened
 
 
+
+# region class Knight
 class Knight(Piece):
 
     def __init__(self, x, y, value, color):
@@ -332,6 +343,273 @@ class Knight(Piece):
             threatened.append((x, y))
 
         return threatened
+# endregion
+
+# region class Fers
+class Fers(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (1, -1),
+        (1, 1),
+        (-1, 1),
+        (-1, -1)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Vazir
+class Vazir(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (1, 0),
+        (0, 1),
+        (-1, 0),
+        (0, -1)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Camel
+class Camel(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (3, -1),
+        (3, 1),
+        (1, 3),
+        (-1, 3),
+        (-3, 1),
+        (-3, -1),
+        (-1, -3),
+        (1, -3)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Zebra
+class Zebra(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (2, -3),
+        (2, 3),
+        (3, 2),
+        (-3, 2),
+        (-2, 3),
+        (-2, -3),
+        (-3, -2),
+        (3, -2)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Antelope
+class Antelope(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (4, -3),
+        (4, 3),
+        (3, 4),
+        (-3, 4),
+        (-4, 3),
+        (-4, -3),
+        (-3, -4),
+        (3, -4)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Eland
+class Eland(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (5, -3),
+        (5, 3),
+        (3, 5),
+        (-3, 5),
+        (-5, 3),
+        (-5, -3),
+        (-3, -5),
+        (3, -5)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Satrap
+class Satrap(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (2, 0),
+        (-2, 0),
+        (0, 2),
+        (0, -2)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Aspbad
+class Aspbad(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (2, -2),
+        (2, 2),
+        (-2, 2),
+        (-2, -2)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Spehbed
+class Spehbed(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (3, 0),
+        (-3, 0),
+        (0, 3),
+        (0, -3)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
+
+# region class Marzban
+class Marzban(Piece):
+
+    def __init__(self, x, y, value, color):
+        super().__init__(x, y, value, color)
+
+    MOVES = [
+        (3, -3),
+        (3, 3),
+        (-3, 3),
+        (-3, -3)
+    ]
+
+    def threatened_squares(self):
+        threatened = []
+
+        for dx, dy in self.MOVES:
+            x = self.x + dx
+            y = self.y + dy
+
+            threatened.append((x, y))
+
+        return threatened
+# endregion
 
 def main():
     board = Board(1001)
@@ -363,5 +641,15 @@ main()
 (-3,-3)(-2,-3)(-1,-3) (0,-3) (1,-3) (2,-3) (3,-3)
 """
 
-# matplotlib
-# .pop
+"""
+Cool patterns:
+Normal rule:
+3 Vazir
+
+
+Rule change:
+1 Vazir + 1 Fers
+
+
+
+"""
