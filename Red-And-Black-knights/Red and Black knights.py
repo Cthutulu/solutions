@@ -42,7 +42,7 @@ class Board:
 
         self.players = [
             Player(1, "R", Vazir),
-            Player(2, "B", Vazir),
+            Player(2, "B", Fers),
             Player(3, "Y", Vazir),
         ]
 
@@ -206,35 +206,35 @@ class Board:
 
             # Original Rule
 
-            square = self.get_square_s(s)
-
-
-            if square == 0:
-                self.set_square_s(s, piece.value)
-
-                for other_player in self.players:
-                    if other_player is not player:
-                        other_player.available.discard(s)
-
-            elif square != piece.value:
-                self.set_square_s(s, "-")
-
-                for other_player in self.players:
-                    other_player.available.discard(s)
-
-
-            # Rule change: all players have to threaten a square to make it inaccessible
-
-            # if s not in self.threatened_by:
-            #     self.threatened_by[s] = set()
+            # square = self.get_square_s(s)
             #
-            # self.threatened_by[s].add(player.value)
             #
-            # if len(self.threatened_by[s]) == len(self.players):
+            # if square == 0:
+            #     self.set_square_s(s, piece.value)
+            #
+            #     for other_player in self.players:
+            #         if other_player is not player:
+            #             other_player.available.discard(s)
+            #
+            # elif square != piece.value:
             #     self.set_square_s(s, "-")
             #
             #     for other_player in self.players:
             #         other_player.available.discard(s)
+
+
+            # Rule change: all players have to threaten a square to make it inaccessible
+
+            if s not in self.threatened_by:
+                self.threatened_by[s] = set()
+
+            self.threatened_by[s].add(player.value)
+
+            if len(self.threatened_by[s]) >= len(self.players) - 1:
+                self.set_square_s(s, "-")
+
+                for other_player in self.players:
+                    other_player.available.discard(s)
 
 
     def show(self):
@@ -267,8 +267,8 @@ class Board:
             cmap=ListedColormap([
                 "white",
                 "red",
-                "Blue",
-                "yellow",
+                "cyan",
+                "black",
                 "grey",
             ]),
             vmin=0,
@@ -645,11 +645,11 @@ main()
 Cool patterns:
 Normal rule:
 3 Vazir
-
+Aspbad, Vazir, Spehbed  (1000+)
 
 Rule change:
 1 Vazir + 1 Fers
-
+Aspbad, Vazir, Spehbed
 
 
 """
