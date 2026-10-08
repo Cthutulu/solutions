@@ -41,9 +41,9 @@ class Board:
         # self.pieces = []
 
         self.players = [
-            Player(1, "R", Vazir),
-            Player(2, "B", Fers),
-            Player(3, "Y", Vazir),
+            Player(1, "R", Knight),
+            Player(2, "B", Zebra),
+            # Player(3, "Y", Camel),
         ]
 
         self.turn = 0
@@ -206,35 +206,35 @@ class Board:
 
             # Original Rule
 
-            # square = self.get_square_s(s)
-            #
-            #
-            # if square == 0:
-            #     self.set_square_s(s, piece.value)
-            #
-            #     for other_player in self.players:
-            #         if other_player is not player:
-            #             other_player.available.discard(s)
-            #
-            # elif square != piece.value:
-            #     self.set_square_s(s, "-")
-            #
-            #     for other_player in self.players:
-            #         other_player.available.discard(s)
+            square = self.get_square_s(s)
 
 
-            # Rule change: all players have to threaten a square to make it inaccessible
+            if square == 0:
+                self.set_square_s(s, piece.value)
 
-            if s not in self.threatened_by:
-                self.threatened_by[s] = set()
+                for other_player in self.players:
+                    if other_player is not player:
+                        other_player.available.discard(s)
 
-            self.threatened_by[s].add(player.value)
-
-            if len(self.threatened_by[s]) >= len(self.players) - 1:
+            elif square != piece.value:
                 self.set_square_s(s, "-")
 
                 for other_player in self.players:
                     other_player.available.discard(s)
+
+
+            # Rule change: all players have to threaten a square to make it inaccessible
+
+            # if s not in self.threatened_by:
+            #     self.threatened_by[s] = set()
+            #
+            # self.threatened_by[s].add(player.value)
+            #
+            # if len(self.threatened_by[s]) >= len(self.players) - 1:
+            #     self.set_square_s(s, "-")
+            #
+            #     for other_player in self.players:
+            #         other_player.available.discard(s)
 
 
     def show(self):
@@ -266,13 +266,13 @@ class Board:
             image,
             cmap=ListedColormap([
                 "white",
-                "red",
-                "cyan",
-                "black",
+                "darkorange",
+                "blue",
+                # "blue",
                 "grey",
             ]),
             vmin=0,
-            vmax=4,
+            vmax=3,
             interpolation="nearest",
         )
         ax.set_axis_off()
