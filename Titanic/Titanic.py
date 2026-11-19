@@ -50,22 +50,21 @@ titan_preds = forest_model.predict(val_X)
 print(accuracy_score(val_y, titan_preds))
 
 
-
 #
 test_data = pd.read_csv("test.csv")
 
 test_X = test_data[cols_to_use].copy()
 
-X['Age'] = X['Age'].fillna(X['Age'].mean())
+test_X['Age'] = test_X['Age'].fillna(X['Age'].mean())
 
 # convert text to numbers for sex
-test_X['Sex'] = X['Sex'].map({
+test_X['Sex'] = test_X['Sex'].map({
     'male': 0,
     'female': 1
 })
 
 # convert text to numbers for embarked
-test_X['Embarked'] = X['Embarked'].map({
+test_X['Embarked'] = test_X['Embarked'].map({
     'S': 0,
     'C': 1,
     'Q': 2
@@ -76,6 +75,14 @@ test_y = forest_model.predict(test_X)
 submission = pd.DataFrame({"PassengerId": test_data["PassengerId"], "Survived": test_y})
 
 submission.to_csv("submission.csv", index=False)
+
+
+"""
+ajust values
+new model
+add feature
+"""
+
 
 
 # sns.countplot(
